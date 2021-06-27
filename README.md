@@ -118,6 +118,11 @@ CREATE CATALOG datasource WITH (
     'username'='postgres',
     'password'='postgres'
 );
+
+-- CREATE CATALOG kudu WITH (
+--     'type'='kudu',
+--     'kudu.masters' = 'kudu-master-1:7051'
+-- );
 ```
 
 ```sql
@@ -166,10 +171,268 @@ Create a database in DWD layer:
 CREATE DATABASE IF NOT EXISTS dwd;
 ```
 
+https://github.com/apache/bahir-flink/tree/master/flink-connector-kudu#supported-data-types
+
+https://kudu.apache.org/docs/command_line_tools_reference.html#table-create
+
+https://jsonformatter.curiousconcept.com/
+
+```json
+{
+  "table_name": "dwd_accident_claims",
+  "schema": {
+    "columns": [
+      {
+        "column_name": "claim_id",
+        "column_type": "INT64",
+        "is_nullable": false
+      },
+      {
+        "column_name": "ds",
+        "column_type": "STRING",
+        "is_nullable": false
+      },
+      {
+        "column_name": "claim_total",
+        "column_type": "DOUBLE",
+        "is_nullable": true
+      },
+      {
+        "column_name": "claim_total_receipt",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "claim_currency",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "member_id",
+        "column_type": "INT32",
+        "is_nullable": true
+      },
+      {
+        "column_name": "accident_date",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "accident_type",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "accident_detail",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "claim_date",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "claim_status",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "ts_created",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "ts_updated",
+        "column_type": "STRING",
+        "is_nullable": true
+      }
+    ],
+    "key_column_names": [
+      "claim_id",
+      "ds"
+    ]
+  },
+  "partition": {
+    "hash_partitions": [
+      {
+        "columns": [
+          "ds"
+        ],
+        "num_buckets": 2,
+        "seed": 100
+      }
+    ],
+    "range_partition": {
+      "columns": [
+        "claim_id"
+      ],
+      "range_bounds": [
+        {
+          "upper_bound": {
+            "bound_type": "inclusive",
+            "bound_values": [
+              "2"
+            ]
+          }
+        },
+        {
+          "lower_bound": {
+            "bound_type": "exclusive",
+            "bound_values": [
+              "2"
+            ]
+          },
+          "upper_bound": {
+            "bound_type": "inclusive",
+            "bound_values": [
+              "3"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "extra_configs": {
+    "configs": {
+      "kudu.table.history_max_age_sec": "3600"
+    }
+  },
+  "num_replicas": 1
+}
+```
+
+```json
+{
+  "table_name": "dwd_members",
+  "schema": {
+    "columns": [
+      {
+        "column_name": "id",
+        "column_type": "INT64",
+        "is_nullable": false
+      },
+      {
+        "column_name": "ds",
+        "column_type": "STRING",
+        "is_nullable": false
+      },
+      {
+        "column_name": "first_name",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "last_name",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "address",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "address_city",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "address_country",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "insurance_company",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "insurance_number",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "ts_created",
+        "column_type": "STRING",
+        "is_nullable": true
+      },
+      {
+        "column_name": "ts_updated",
+        "column_type": "STRING",
+        "is_nullable": true
+      }
+    ],
+    "key_column_names": [
+      "id",
+      "ds"
+    ]
+  },
+  "partition": {
+    "hash_partitions": [
+      {
+        "columns": [
+          "ds"
+        ],
+        "num_buckets": 2,
+        "seed": 100
+      }
+    ],
+    "range_partition": {
+      "columns": [
+        "id"
+      ],
+      "range_bounds": [
+        {
+          "upper_bound": {
+            "bound_type": "inclusive",
+            "bound_values": [
+              "2"
+            ]
+          }
+        },
+        {
+          "lower_bound": {
+            "bound_type": "exclusive",
+            "bound_values": [
+              "2"
+            ]
+          },
+          "upper_bound": {
+            "bound_type": "inclusive",
+            "bound_values": [
+              "3"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "extra_configs": {
+    "configs": {
+      "kudu.table.history_max_age_sec": "3600"
+    }
+  },
+  "num_replicas": 1
+}
+```
+
+
+```shell
+docker compose exec kudu-master-1 sh
+kudu table create kudu-master-1:7051 '{"table_name":"dwd_accident_claims","schema":{"columns":[{"column_name":"claim_id","column_type":"INT64","is_nullable":false},{"column_name":"ds","column_type":"STRING","is_nullable":false},{"column_name":"claim_total","column_type":"DOUBLE","is_nullable":true},{"column_name":"claim_total_receipt","column_type":"STRING","is_nullable":true},{"column_name":"claim_currency","column_type":"STRING","is_nullable":true},{"column_name":"member_id","column_type":"INT32","is_nullable":true},{"column_name":"accident_date","column_type":"STRING","is_nullable":true},{"column_name":"accident_type","column_type":"STRING","is_nullable":true},{"column_name":"accident_detail","column_type":"STRING","is_nullable":true},{"column_name":"claim_date","column_type":"STRING","is_nullable":true},{"column_name":"claim_status","column_type":"STRING","is_nullable":true},{"column_name":"ts_created","column_type":"STRING","is_nullable":true},{"column_name":"ts_updated","column_type":"STRING","is_nullable":true}],"key_column_names":["claim_id","ds"]},"partition":{"hash_partitions":[{"columns":["ds"],"num_buckets":2,"seed":100}],"range_partition":{"columns":["claim_id"],"range_bounds":[{"upper_bound":{"bound_type":"inclusive","bound_values":["2"]}},{"lower_bound":{"bound_type":"exclusive","bound_values":["2"]},"upper_bound":{"bound_type":"inclusive","bound_values":["3"]}}]}},"extra_configs":{"configs":{"kudu.table.history_max_age_sec":"3600"}},"num_replicas":1}'
+kudu table create kudu-master-1:7051 '{"table_name":"dwd_members","schema":{"columns":[{"column_name":"id","column_type":"INT64","is_nullable":false},{"column_name":"ds","column_type":"STRING","is_nullable":false},{"column_name":"first_name","column_type":"STRING","is_nullable":true},{"column_name":"last_name","column_type":"STRING","is_nullable":true},{"column_name":"address","column_type":"STRING","is_nullable":true},{"column_name":"address_city","column_type":"STRING","is_nullable":true},{"column_name":"address_country","column_type":"STRING","is_nullable":true},{"column_name":"insurance_company","column_type":"STRING","is_nullable":true},{"column_name":"insurance_number","column_type":"STRING","is_nullable":true},{"column_name":"ts_created","column_type":"STRING","is_nullable":true},{"column_name":"ts_updated","column_type":"STRING","is_nullable":true}],"key_column_names":["id","ds"]},"partition":{"hash_partitions":[{"columns":["ds"],"num_buckets":2,"seed":100}],"range_partition":{"columns":["id"],"range_bounds":[{"upper_bound":{"bound_type":"inclusive","bound_values":["2"]}},{"lower_bound":{"bound_type":"exclusive","bound_values":["2"]},"upper_bound":{"bound_type":"inclusive","bound_values":["3"]}}]}},"extra_configs":{"configs":{"kudu.table.history_max_age_sec":"3600"}},"num_replicas":1}'
+kudu table list kudu-master-1:7051
+# kudu table delete kudu-master-1:7051 dwd_accident_claims
+# kudu table delete kudu-master-1:7051 dwd_members
+```
+
+
 ```sql
 CREATE TABLE dwd.accident_claims
 (
     claim_id            BIGINT,
+    ds                  VARCHAR(20),
     claim_total         DOUBLE,
     claim_total_receipt VARCHAR(50),
     claim_currency      VARCHAR(3),
@@ -180,17 +443,13 @@ CREATE TABLE dwd.accident_claims
     claim_date          VARCHAR(20),
     claim_status        VARCHAR(10),
     ts_created          VARCHAR(20),
-    ts_updated          VARCHAR(20),
-    ds                  VARCHAR(20),
-    PRIMARY KEY (claim_id) NOT ENFORCED
-) WITH ( --PARTITIONED BY (ds)
-  'connector'='upsert-kafka',
-  'topic'='dwd_accident_claims',
-  'properties.bootstrap.servers'='kafka:9092',
-  'properties.group.id'='dwd_accident_claims_table',
---   'scan.startup.mode'='earliest-offset',
-  'key.format' = 'csv',
-  'value.format' = 'csv'
+    ts_updated          VARCHAR(20)
+) WITH (
+  'connector.type' = 'kudu',
+  'kudu.masters' = 'kudu-master-1:7051',
+  'kudu.table' = 'dwd_accident_claims',
+  'kudu.hash-columns' = 'ds',
+  'kudu.primary-key-columns' = 'claim_id,ds'
 );
 ```
 
@@ -198,6 +457,7 @@ CREATE TABLE dwd.accident_claims
 CREATE TABLE dwd.members
 (
     id                BIGINT,
+    ds                VARCHAR(20),
     first_name        VARCHAR(50),
     last_name         VARCHAR(50),
     address           VARCHAR(50),
@@ -206,16 +466,13 @@ CREATE TABLE dwd.members
     insurance_company VARCHAR(25),
     insurance_number  VARCHAR(50),
     ts_created        VARCHAR(20),
-    ts_updated        VARCHAR(20),
-    ds                  VARCHAR(20),
-    PRIMARY KEY (id) NOT ENFORCED
+    ts_updated        VARCHAR(20)
 ) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwd_members',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwd_members_table',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
+      'connector.type' = 'kudu',
+      'kudu.masters' = 'kudu-master-1:7051',
+      'kudu.table' = 'dwd_members',
+      'kudu.hash-columns' = 'ds',
+      'kudu.primary-key-columns' = 'id,ds'
       );
 ```
 
@@ -224,6 +481,7 @@ and submit a continuous query to the Flink cluster that will write the data from
 ```sql
 INSERT INTO dwd.accident_claims
 SELECT claim_id,
+       SUBSTRING(claim_date, 0, 9),
        claim_total,
        claim_total_receipt,
        claim_currency,
@@ -234,14 +492,14 @@ SELECT claim_id,
        claim_date,
        claim_status,
        ts_created,
-       ts_updated,
-       SUBSTRING(claim_date, 0, 9)
+       ts_updated
 FROM datasource.accident_claims;
 ```
 
 ```sql
 INSERT INTO dwd.members
 SELECT id,
+       SUBSTRING(ts_created, 0, 9),
        first_name,
        last_name,
        address,
@@ -250,8 +508,7 @@ SELECT id,
        insurance_company,
        insurance_number,
        ts_created,
-       ts_updated,
-       SUBSTRING(ts_created, 0, 9)
+       ts_updated
 FROM datasource.members;
 ```
 

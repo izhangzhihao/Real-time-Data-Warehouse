@@ -24,16 +24,36 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ${PWD}/postgres-image:/docker-entrypoint-initdb.d
-  mysql:
-    image: mysql:5.7
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - ${PWD}/mysql:/docker-entrypoint-initdb.d
+  # mysql:
+  #   image: mysql:5.7
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  #   volumes:
+  #     - ${PWD}/mysql:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - MYSQL_DATABASE=wordpress
+  kudu-master-1:
+    image: apache/kudu:1.15-ubuntu
     ports:
-      - 3306:3306
+      - 7051:7051
+      - 8051:8051
+    command: ["master"]
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=wordpress
+      - KUDU_MASTERS=kudu-master-1
+  kudu-tserver:
+    image: apache/kudu:1.15-ubuntu
+    depends_on:
+      - kudu-master-1
+    ports:
+      - 7050:7050
+      - 8050:8050
+    command: ["tserver"]
+    environment:
+      - KUDU_MASTERS=kudu-master-1
+    deploy:
+      replicas: 1
   connect:
     image: debezium/connect:1.5
     ports:
@@ -55,13 +75,14 @@ services:
       - kafka
       - jobmanager
       - elasticsearch
+      - kudu-master-1
     environment:
       FLINK_JOBMANAGER_HOST: jobmanager
       ZOOKEEPER_CONNECT: zookeeper
       KAFKA_BOOTSTRAP: kafka
       ES_HOST: elasticsearch
   jobmanager:
-    image: flink:1.13.1-scala_2.12-java11
+    image: flink:1.12.0-scala_2.12-java11
     ports:
       - "8081:8081"
     command: jobmanager
@@ -72,7 +93,7 @@ services:
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
   taskmanager:
-    image: flink:1.13.1-scala_2.12-java11
+    image: flink:1.12.0-scala_2.12-java11
     depends_on:
       - jobmanager
     command: taskmanager

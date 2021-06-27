@@ -16,6 +16,9 @@
 
 jobmanager.rpc.address: jobmanager
 jobmanager.web.history: 20
+jobmanager.memory.enable-jvm-direct-memory-limi: true
+jobmanager.memory.heap.size: 2048mb
+taskmanager.memory.task.off-heap.size: 2048mb
 taskmanager.numberOfTaskSlots: 50
 state.checkpoints.num-retained: 1
 

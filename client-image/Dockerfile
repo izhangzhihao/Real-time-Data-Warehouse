@@ -16,20 +16,24 @@
 # limitations under the License.
 ###############################################################################
 
-FROM flink:1.13.1-scala_2.12-java11
+FROM flink:1.12.0-scala_2.12-java11
 
 # Copy sql-client script
 COPY sql-client/ /opt/sql-client
 RUN mkdir -p /opt/sql-client/lib
 
 # Download connector libraries
-RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-json/1.13.1/flink-json-1.13.1.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-kafka_2.12/1.13.1/flink-sql-connector-kafka_2.12-1.13.1.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-elasticsearch7_2.12/1.13.1/flink-sql-connector-elasticsearch7_2.12-1.13.1.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-jdbc_2.12/1.13.1/flink-connector-jdbc_2.12-1.13.1.jar; \
+RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-json/1.12.0/flink-json-1.12.0.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-kafka_2.12/1.12.0/flink-sql-connector-kafka_2.12-1.12.0.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-elasticsearch7_2.12/1.12.0/flink-sql-connector-elasticsearch7_2.12-1.12.0.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-jdbc_2.12/1.12.0/flink-connector-jdbc_2.12-1.12.0.jar; \
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/postgresql/postgresql/42.2.14/postgresql-42.2.14.jar; \
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.13.1/flink-connector-kafka_2.12-1.13.1.jar;
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.12.0/flink-connector-kafka_2.12-1.12.0.jar; \
+    wget -P /opt/sql-client/lib/ https://repository.cloudera.com/artifactory/cloudera-repos/org/apache/bahir/flink-connector-kudu_2.12/1.0-csa1.4.0.0/flink-connector-kudu_2.12-1.0-csa1.4.0.0.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kudu/kudu-client/1.13.0/kudu-client-1.13.0.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/com/stumbleupon/async/1.4.1/async-1.4.1.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar;
 
 # Copy configuration
 COPY conf/* /opt/flink/conf/
