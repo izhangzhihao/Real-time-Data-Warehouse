@@ -29,7 +29,9 @@ RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-jdbc_2.12/1.13.1/flink-connector-jdbc_2.12-1.13.1.jar; \
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/postgresql/postgresql/42.2.14/postgresql-42.2.14.jar; \
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.13.1/flink-connector-kafka_2.12-1.13.1.jar;
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.13.1/flink-connector-kafka_2.12-1.13.1.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar;
+
 
 # Copy configuration
 COPY conf/* /opt/flink/conf/
@@ -37,5 +39,6 @@ COPY conf/* /opt/flink/conf/
 WORKDIR /opt/sql-client
 ENV SQL_CLIENT_HOME /opt/sql-client
 
+COPY exec.sql /opt/sql-client
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
