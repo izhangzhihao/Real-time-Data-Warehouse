@@ -1,7 +1,4 @@
-## Docker
-
-To keep things simple, this demo uses a Docker Compose setup that makes it easier to bundle up all the services you need
-for your Real-time Data Warehouse:
+## Real-time Data Warehouse
 
 <p align="center">
 <img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/123548508-94b73400-d797-11eb-837a-beeb3b2a0535.png">
@@ -416,7 +413,7 @@ cat ./postgres_datagen.sql | docker exec -i flink-sql-cdc_postgres_1 psql -U pos
 
 
 
-References:
+## References
 
 * [Flink SQL Client](https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/dev/table/sqlclient/)
 * [Flink SQL Cookbook](https://github.com/ververica/flink-sql-cookbook)
