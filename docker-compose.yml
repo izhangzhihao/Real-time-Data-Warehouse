@@ -14,6 +14,23 @@ services:
       - zookeeper
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
+  akhq:
+    image: tchiotludo/akhq
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka:9092"
+              connect:
+                - name: "connect"
+                  url: "http://connect:8083"
+    ports:
+      - 8080:8080
+    links:
+      - kafka
+      - zookeeper
   postgres:
     build: ./postgres-image
     image: rtdw/postgres
@@ -24,16 +41,6 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ${PWD}/postgres-image:/docker-entrypoint-initdb.d
-  mysql:
-    image: mysql:5.7
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - ${PWD}/mysql:/docker-entrypoint-initdb.d
-    ports:
-      - 3306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=wordpress
   connect:
     image: debezium/connect:1.5
     ports:
@@ -48,40 +55,24 @@ services:
       - CONFIG_STORAGE_TOPIC=my_connect_configs
       - OFFSET_STORAGE_TOPIC=my_connect_offsets
       - STATUS_STORAGE_TOPIC=my_connect_statuses
-  sql-client:
-    build: ./client-image
-    image: rtdw/flink-sql-client
+  polynote:
+    build: ./polynote
+    image: polynote
+    command: --config /opt/config/config.yml
     depends_on:
       - kafka
-      - jobmanager
       - elasticsearch
     environment:
       FLINK_JOBMANAGER_HOST: jobmanager
       ZOOKEEPER_CONNECT: zookeeper
       KAFKA_BOOTSTRAP: kafka
       ES_HOST: elasticsearch
-  jobmanager:
-    image: flink:1.13.1-scala_2.12-java11
     ports:
-      - "8081:8081"
-    command: jobmanager
-    environment:
-      - |
-        FLINK_PROPERTIES=
-        jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 50
-        parallelism.default: 1
-  taskmanager:
-    image: flink:1.13.1-scala_2.12-java11
-    depends_on:
-      - jobmanager
-    command: taskmanager
-    environment:
-      - |
-        FLINK_PROPERTIES=
-        jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 50
-        parallelism.default: 1
+      - 8192:8192
+      - "4040-4050:4040-4050"
+    volumes:
+      - ${PWD}/polynote/config.yml:/opt/config/config.yml
+      - ${PWD}/polynote/notebooks:/opt/notebooks/
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
     environment:
@@ -103,3 +94,10 @@ services:
     image: docker.elastic.co/kibana/kibana:7.11.2
     ports:
       - "5601:5601"
+  minio:
+    image: minio/minio
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+    command: server /data

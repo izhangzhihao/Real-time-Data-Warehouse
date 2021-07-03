@@ -1,8 +1,8 @@
-## Real-time Data Warehouse
+## Real-time Data Warehouse with Apache Spark & Delta
 
-<p align="center">
+<!-- <p align="center">
 <img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/123548508-94b73400-d797-11eb-837a-beeb3b2a0535.png">
-</p>
+</p> -->
 
 #### Getting the setup up and running
 
@@ -88,340 +88,38 @@ WHERE claim_id = 1001;
 In the output of your Kafka console consumer, you should now see three consecutive events with `op` values equal
 to `c` (an _insert_ event), `u` (an _update_ event) and `d` (a _delete_ event).
 
-## Flink connectors
-
-https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/connectors/table/overview/
-https://flink-packages.org/categories/connectors
-https://github.com/knaufk/flink-faker/
-
-## Datasource ingestion
-
-Start the Flink SQL Client:
+## Start the Spark SQL Client:
 
 ```bash
-docker compose exec sql-client ./sql-client.sh
+docker compose exec polynote spark-sql --packages io.delta:delta-core_2.12:1.0.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
 ```
 
 
 OR
 
 ```bash
-docker compose exec sql-client ./sql-client-submit.sh
+docker compose exec polynote spark-sql -f exec.sql --packages io.delta:delta-core_2.12:1.0.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
 ```
 
-Register
-a [Postgres catalog](https://ci.apache.org/projects/flink/flink-docs-stable/dev/table/connectors/jdbc.html#postgres-database-as-a-catalog)
-, so you can access the metadata of the external tables over JDBC:
+This DDL is used to define a stream table. We can create a stream table like same way spark supports data source table creation. Besides, there is no obvious difference between static table definition and stream table definition.
 
 ```sql
-CREATE CATALOG datasource WITH (
-    'type'='jdbc',
-    'property-version'='1',
-    'base-url'='jdbc:postgresql://postgres:5432/',
-    'default-database'='postgres',
-    'username'='postgres',
-    'password'='postgres'
+CREATE TABLE accident_claims_cdc
+USING kafka
+options (
+subscribe="pg_claims.claims.accident_claims", kafka.bootstrap.servers="kafka:9092"
 );
 ```
 
-```sql
-CREATE DATABASE IF NOT EXISTS datasource;
-```
 
-Create a changelog table to consume the change events from the `pg_claims.claims.accident_claims` topic, with the same
-schema as the `accident_claims` source table, that consumes the `debezium-json` format:
+## Execute streaming job from Polynote
 
-```sql
-CREATE TABLE datasource.accident_claims WITH (
-                                            'connector' = 'kafka',
-                                            'topic' = 'pg_claims.claims.accident_claims',
-                                            'properties.bootstrap.servers' = 'kafka:9092',
-                                            'properties.group.id' = 'accident_claims-consumer-group',
-                                            'format' = 'debezium-json',
-                                            'scan.startup.mode' = 'earliest-offset'
-                                            ) LIKE datasource.postgres.`claims.accident_claims` ( EXCLUDING OPTIONS);
-```
-
-and `members` table:
-
-```sql
-CREATE TABLE datasource.members WITH (
-                                    'connector' = 'kafka',
-                                    'topic' = 'pg_claims.claims.members',
-                                    'properties.bootstrap.servers' = 'kafka:9092',
-                                    'properties.group.id' = 'members-consumer-group',
-                                    'format' = 'debezium-json',
-                                    'scan.startup.mode' = 'earliest-offset'
-                                    ) LIKE datasource.postgres.`claims.members` ( EXCLUDING OPTIONS);
-```
-
-Check data:
-
-```sql
-SELECT * FROM datasource.accident_claims;
-SELECT * FROM datasource.members;
-```
-
-## DWD
-
-Create a database in DWD layer:
-
-```sql
-CREATE DATABASE IF NOT EXISTS dwd;
-```
-
-```sql
-CREATE TABLE dwd.accident_claims
-(
-    claim_id            BIGINT,
-    claim_total         DOUBLE,
-    claim_total_receipt VARCHAR(50),
-    claim_currency      VARCHAR(3),
-    member_id           INT,
-    accident_date       VARCHAR(20),
-    accident_type       VARCHAR(20),
-    accident_detail     VARCHAR(20),
-    claim_date          VARCHAR(20),
-    claim_status        VARCHAR(10),
-    ts_created          VARCHAR(20),
-    ts_updated          VARCHAR(20),
-    ds                  VARCHAR(20),
-    PRIMARY KEY (claim_id) NOT ENFORCED
-) WITH ( --PARTITIONED BY (ds)
-  'connector'='upsert-kafka',
-  'topic'='dwd_accident_claims',
-  'properties.bootstrap.servers'='kafka:9092',
-  'properties.group.id'='dwd_accident_claims_table',
---   'scan.startup.mode'='earliest-offset',
-  'key.format' = 'csv',
-  'value.format' = 'csv'
-);
-```
-
-```sql
-CREATE TABLE dwd.members
-(
-    id                BIGINT,
-    first_name        VARCHAR(50),
-    last_name         VARCHAR(50),
-    address           VARCHAR(50),
-    address_city      VARCHAR(10),
-    address_country   VARCHAR(10),
-    insurance_company VARCHAR(25),
-    insurance_number  VARCHAR(50),
-    ts_created        VARCHAR(20),
-    ts_updated        VARCHAR(20),
-    ds                  VARCHAR(20),
-    PRIMARY KEY (id) NOT ENFORCED
-) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwd_members',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwd_members_table',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
-      );
-```
-
-and submit a continuous query to the Flink cluster that will write the data from datasource into dwd table(ES):
-
-```sql
-INSERT INTO dwd.accident_claims
-SELECT claim_id,
-       claim_total,
-       claim_total_receipt,
-       claim_currency,
-       member_id,
-       accident_date,
-       accident_type,
-       accident_detail,
-       claim_date,
-       claim_status,
-       ts_created,
-       ts_updated,
-       SUBSTRING(claim_date, 0, 9)
-FROM datasource.accident_claims;
-```
-
-```sql
-INSERT INTO dwd.members
-SELECT id,
-       first_name,
-       last_name,
-       address,
-       address_city,
-       address_country,
-       insurance_company,
-       insurance_number,
-       ts_created,
-       ts_updated,
-       SUBSTRING(ts_created, 0, 9)
-FROM datasource.members;
-```
-
-Check data:
-
-```sql
-SELECT * FROM dwd.accident_claims;
-SELECT * FROM dwd.members;
-```
-
-## DWB
-
-Create a database in DWB layer:
-
-```sql
-CREATE DATABASE IF NOT EXISTS dwb;
-```
-
-```sql
-CREATE TABLE dwb.accident_claims
-(
-    claim_id            BIGINT,
-    claim_total         DOUBLE,
-    claim_total_receipt VARCHAR(50),
-    claim_currency      VARCHAR(3),
-    member_id           INT,
-    accident_date       VARCHAR(20),
-    accident_type       VARCHAR(20),
-    accident_detail     VARCHAR(20),
-    claim_date          VARCHAR(20),
-    claim_status        VARCHAR(10),
-    ts_created          VARCHAR(20),
-    ts_updated          VARCHAR(20),
-    ds                  VARCHAR(20),
-    PRIMARY KEY (claim_id) NOT ENFORCED
-) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwb_accident_claims',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwb_accident_claims',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
-      );
-```
-
-```sql
-CREATE TABLE dwb.members
-(
-    id                BIGINT,
-    first_name        VARCHAR(50),
-    last_name         VARCHAR(50),
-    address           VARCHAR(50),
-    address_city      VARCHAR(10),
-    address_country   VARCHAR(10),
-    insurance_company VARCHAR(25),
-    insurance_number  VARCHAR(50),
-    ts_created        VARCHAR(20),
-    ts_updated        VARCHAR(20),
-    ds                VARCHAR(20),
-    PRIMARY KEY (id) NOT ENFORCED
-) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwb_members',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwb_members_table',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
-      );
-```
-
-```sql
-INSERT INTO dwb.accident_claims
-SELECT claim_id,
-       claim_total,
-       claim_total_receipt,
-       claim_currency,
-       member_id,
-       accident_date,
-       accident_type,
-       accident_detail,
-       claim_date,
-       claim_status,
-       ts_created,
-       ts_updated,
-       ds
-FROM dwd.accident_claims;
-```
-
-```sql
-INSERT INTO dwb.members
-SELECT id,
-       first_name,
-       last_name,
-       address,
-       address_city,
-       address_country,
-       insurance_company,
-       insurance_number,
-       ts_created,
-       ts_updated,
-       ds
-FROM dwd.members;
-```
-
-Check data:
-
-```sql
-SELECT * FROM dwb.accident_claims;
-SELECT * FROM dwb.members;
-```
-
-## DWS
-
-Create a database in DWS layer:
-
-```sql
-CREATE DATABASE IF NOT EXISTS dws;
-```
-
-```sql
-CREATE TABLE dws.insurance_costs
-(
-    es_key            STRING PRIMARY KEY NOT ENFORCED,
-    insurance_company STRING,
-    accident_detail   STRING,
-    accident_agg_cost DOUBLE
-) WITH (
-      'connector' = 'elasticsearch-7', 'hosts' = 'http://elasticsearch:9200', 'index' = 'agg_insurance_costs'
-      );
-```
-
-and submit a continuous query to the Flink cluster that will write the aggregated insurance costs
-per `insurance_company`, bucketed by `accident_detail` (or, what animals are causing the most harm in terms of costs):
-
-```sql
-INSERT INTO dws.insurance_costs
-SELECT UPPER(SUBSTRING(m.insurance_company, 0, 4) || '_' || SUBSTRING(ac.accident_detail, 0, 4)) es_key,
-       m.insurance_company,
-       ac.accident_detail,
-       SUM(ac.claim_total) member_total
-FROM dwb.accident_claims ac
-         JOIN dwb.members m
-              ON ac.member_id = m.id
-WHERE ac.claim_status <> 'DENIED'
-GROUP BY m.insurance_company, ac.accident_detail;
-```
-
-Finally, create a
-simple [dashboard in Kibana](https://www.elastic.co/guide/en/kibana/current/dashboard-create-new-dashboard.html) with a
-1s refresh rate and use the (very rustic) `postgres_datagen.sql` data generator script to periodically insert some
-records into the Postgres source table, creating visible changes in your results:
-
-```bash
-cat ./postgres_datagen.sql | docker exec -i flink-sql-cdc_postgres_1 psql -U postgres -d postgres
-```
-
-
-
-
-
-
-
-
+http://localhost:8192
 
 ## References
 
-* [Flink SQL Client](https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/dev/table/sqlclient/)
-* [Flink SQL Cookbook](https://github.com/ververica/flink-sql-cookbook)
-* [Change Data Capture with Flink SQL and Debezium](https://noti.st/morsapaes/liQzgs/change-data-capture-with-flink-sql-and-debezium)
+* [Simplify CDC pipeline with Spark Streaming SQL and Delta Lake](https://www.iteblog.com/ppt/sparkaisummit-north-america-2020-iteblog/simplify-cdc-pipeline-with-spark-streaming-sql-and-delta-lake-iteblog.com.pdf)
+
+* [SPIP: Support Streaming SQL interface in Spark](https://docs.google.com/document/d/19degwnIIcuMSELv6BQ_1VQI5AIVcvGeqOm5xE2-aRA0/edit)
+
+* [Structured Streaming + Kafka Integration Guide (Kafka broker version 0.10.0 or higher](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html)
