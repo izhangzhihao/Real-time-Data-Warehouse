@@ -187,14 +187,12 @@ CREATE TABLE dwd.accident_claims
     ts_updated          VARCHAR(20),
     ds                  VARCHAR(20),
     PRIMARY KEY (claim_id) NOT ENFORCED
-) WITH ( --PARTITIONED BY (ds)
-  'connector'='upsert-kafka',
-  'topic'='dwd_accident_claims',
-  'properties.bootstrap.servers'='kafka:9092',
-  'properties.group.id'='dwd_accident_claims_table',
---   'scan.startup.mode'='earliest-offset',
-  'key.format' = 'csv',
-  'value.format' = 'csv'
+) PARTITIONED BY (ds) WITH (
+  'connector'='hudi',
+  'path' = 's3://dwd',
+  'table.type' = 'MERGE_ON_READ',
+  'read.streaming.enabled' = 'true',
+  'read.streaming.check-interval' = '4'
 );
 ```
 
