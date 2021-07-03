@@ -67,10 +67,7 @@ In the tab you used to start the Postgres client, you can now run some DML state
 propagated all the way to your Kafka topic:
 
 ```sql
-INSERT INTO accident_claims (claim_total, claim_total_receipt, claim_currency, member_id, accident_date, accident_type,
-                             accident_detail, claim_date, claim_status)
-VALUES (500, 'PharetraMagnaVestibulum.tiff', 'AUD', 321, '2020-08-01 06:43:03', 'Collision', 'Blue Ringed Octopus',
-        '2020-08-10 09:39:31', 'INITIAL');
+INSERT INTO accident_claims (claim_total, claim_total_receipt, claim_currency, member_id, accident_date, accident_type,accident_detail, claim_date, claim_status) VALUES (500, 'PharetraMagnaVestibulum.tiff', 'AUD', 321, '2020-08-01 06:43:03', 'Collision', 'Blue Ringed Octopus','2020-08-10 09:39:31', 'INITIAL');
 ```
 
 ```sql
@@ -128,17 +125,16 @@ CREATE CATALOG datasource WITH (
 CREATE DATABASE IF NOT EXISTS datasource;
 ```
 
-Create a changelog table to consume the change events from the `pg_claims.claims.accident_claims` topic, with the same
-schema as the `accident_claims` source table, that consumes the `debezium-json` format:
-
 ```sql
 CREATE TABLE datasource.accident_claims WITH (
-                                            'connector' = 'kafka',
-                                            'topic' = 'pg_claims.claims.accident_claims',
-                                            'properties.bootstrap.servers' = 'kafka:9092',
-                                            'properties.group.id' = 'accident_claims-consumer-group',
-                                            'format' = 'debezium-json',
-                                            'scan.startup.mode' = 'earliest-offset'
+                                            'connector' = 'postgres-cdc',
+                                            'hostname' = 'postgres',
+                                            'port' = '5432',
+                                            'username' = 'postgres',
+                                            'password' = 'postgres',
+                                            'database-name' = 'postgres',
+                                            'schema-name' = 'claims',
+                                            'table-name' = 'accident_claims'
                                             ) LIKE datasource.postgres.`claims.accident_claims` ( EXCLUDING OPTIONS);
 ```
 

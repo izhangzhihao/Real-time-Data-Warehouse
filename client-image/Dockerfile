@@ -33,6 +33,9 @@ RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar; \ 
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/hudi/hudi-flink-bundle_2.12/0.8.0/hudi-flink-bundle_2.12-0.8.0.jar;
 
+# RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/com/alibaba/ververica/flink-connector-postgres-cdc/1.5.0/flink-connector-postgres-cdc-1.5.0.jar;
+COPY jars/* /opt/sql-client/lib/
+
 
 # Copy configuration
 COPY conf/* /opt/flink/conf/
