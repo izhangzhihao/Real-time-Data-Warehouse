@@ -422,6 +422,7 @@ cat ./postgres_datagen.sql | docker exec -i flink-sql-cdc_postgres_1 psql -U pos
 
 ## References
 
+* [Flink SQL DDL](https://docs.google.com/document/d/1TTP-GCC8wSsibJaSUyFZ_5NBAHYEB1FVmPpP7RgDGBA/edit)
 * [Flink SQL Client](https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/dev/table/sqlclient/)
 * [Flink SQL Cookbook](https://github.com/ververica/flink-sql-cookbook)
 * [Change Data Capture with Flink SQL and Debezium](https://noti.st/morsapaes/liQzgs/change-data-capture-with-flink-sql-and-debezium)
