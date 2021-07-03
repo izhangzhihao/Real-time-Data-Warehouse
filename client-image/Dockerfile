@@ -30,7 +30,9 @@ RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/postgresql/postgresql/42.2.14/postgresql-42.2.14.jar; \
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar; \
     wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.13.1/flink-connector-kafka_2.12-1.13.1.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar;
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/iceberg/iceberg-flink-runtime/0.11.1/iceberg-flink-runtime-0.11.1.jar; \
+    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-hive-3.1.2_2.12/1.13.1/flink-sql-connector-hive-3.1.2_2.12-1.13.1.jar;
 
 
 # Copy configuration
