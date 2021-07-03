@@ -67,22 +67,15 @@ In the tab you used to start the Postgres client, you can now run some DML state
 propagated all the way to your Kafka topic:
 
 ```sql
-INSERT INTO accident_claims (claim_total, claim_total_receipt, claim_currency, member_id, accident_date, accident_type,
-                             accident_detail, claim_date, claim_status)
-VALUES (500, 'PharetraMagnaVestibulum.tiff', 'AUD', 321, '2020-08-01 06:43:03', 'Collision', 'Blue Ringed Octopus',
-        '2020-08-10 09:39:31', 'INITIAL');
+INSERT INTO accident_claims (claim_total, claim_total_receipt, claim_currency, member_id, accident_date, accident_type,accident_detail, claim_date, claim_status) VALUES (500, 'PharetraMagnaVestibulum.tiff', 'AUD', 321, '2020-08-01 06:43:03', 'Collision', 'Blue Ringed Octopus','2020-08-10 09:39:31', 'INITIAL');
 ```
 
 ```sql
-UPDATE accident_claims
-SET claim_total_receipt = 'CorrectReceipt.pdf'
-WHERE claim_id = 1001;
+UPDATE accident_claims SET claim_total_receipt = 'CorrectReceipt.pdf' WHERE claim_id = 1001;
 ```
 
 ```sql
-DELETE
-FROM accident_claims
-WHERE claim_id = 1001;
+DELETE FROM accident_claims WHERE claim_id = 1001;
 ```
 
 In the output of your Kafka console consumer, you should now see three consecutive events with `op` values equal
@@ -92,7 +85,7 @@ to `c` (an _insert_ event), `u` (an _update_ event) and `d` (a _delete_ event).
 
 https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/connectors/table/overview/
 https://flink-packages.org/categories/connectors
-https://github.com/knaufk/flink-faker/
+[DataGen SQL Connector](https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/connectors/table/datagen/)
 
 ## Datasource ingestion
 
