@@ -24,16 +24,16 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ${PWD}/postgres-image:/docker-entrypoint-initdb.d
-  mysql:
-    image: mysql:5.7
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - ${PWD}/mysql:/docker-entrypoint-initdb.d
-    ports:
-      - 3306:3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=wordpress
+  # mysql:
+  #   image: mysql:5.7
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  #   volumes:
+  #     - ${PWD}/mysql:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - MYSQL_DATABASE=wordpress
   connect:
     image: debezium/connect:1.5
     ports:
@@ -61,7 +61,7 @@ services:
       KAFKA_BOOTSTRAP: kafka
       ES_HOST: elasticsearch
   jobmanager:
-    image: flink:1.13.1-scala_2.12-java11
+    image: flink:1.11.3-scala_2.12-java11
     ports:
       - "8081:8081"
     command: jobmanager
@@ -72,7 +72,7 @@ services:
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
   taskmanager:
-    image: flink:1.13.1-scala_2.12-java11
+    image: flink:1.11.3-scala_2.12-java11
     depends_on:
       - jobmanager
     command: taskmanager
@@ -82,24 +82,24 @@ services:
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.11.2
-    ports:
-      - "5601:5601"
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+  #   environment:
+  #     - cluster.name=docker-cluster
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - discovery.type=single-node
+  #   ports:
+  #     - "9200:9200"
+  #     - "9300:9300"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.11.2
+  #   ports:
+  #     - "5601:5601"

@@ -122,6 +122,12 @@ CREATE CATALOG datasource WITH (
     'username'='postgres',
     'password'='postgres'
 );
+
+CREATE CATALOG my_catalog WITH (
+                      'type'='iceberg', 
+                      'catalog-type'='hadoop',
+                      'warehouse'='/warehouse'
+                      );
 ```
 
 ```sql
