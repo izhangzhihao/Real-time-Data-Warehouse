@@ -127,14 +127,12 @@ CREATE DATABASE IF NOT EXISTS datasource;
 
 ```sql
 CREATE TABLE datasource.accident_claims WITH (
-                                            'connector' = 'postgres-cdc',
-                                            'hostname' = 'postgres',
-                                            'port' = '5432',
-                                            'username' = 'postgres',
-                                            'password' = 'postgres',
-                                            'database-name' = 'postgres',
-                                            'schema-name' = 'claims',
-                                            'table-name' = 'accident_claims'
+                                            'connector' = 'kafka',
+                                            'topic' = 'pg_claims.claims.accident_claims',
+                                            'properties.bootstrap.servers' = 'kafka:9092',
+                                            'properties.group.id' = 'accident_claims-consumer-group',
+                                            'format' = 'debezium-json',
+                                            'scan.startup.mode' = 'earliest-offset'
                                             ) LIKE datasource.postgres.`claims.accident_claims` ( EXCLUDING OPTIONS);
 ```
 
@@ -185,10 +183,11 @@ CREATE TABLE dwd.accident_claims
     PRIMARY KEY (claim_id) NOT ENFORCED
 ) PARTITIONED BY (ds) WITH (
   'connector'='hudi',
-  'path' = 's3://dwd',
+  'path' = '/data/dwd/accident_claims',
   'table.type' = 'MERGE_ON_READ',
   'read.streaming.enabled' = 'true',
-  'read.streaming.check-interval' = '4'
+  'read.streaming.check-interval' = '4',
+  'write.precombine.field' = 'ts_updated'
 );
 ```
 

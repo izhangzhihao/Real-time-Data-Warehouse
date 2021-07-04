@@ -60,8 +60,14 @@ services:
       ZOOKEEPER_CONNECT: zookeeper
       KAFKA_BOOTSTRAP: kafka
       ES_HOST: elasticsearch
+      # HOODIE_ENV_fs_DOT_oss_DOT_endpoint: "minio:9000"
+      # HOODIE_ENV_fs_DOT_oss_DOT_accessKeyId: abc
+      # HOODIE_ENV_fs_DOT_oss_DOT_accessKeySecret: xyzxyzxyz
+      # HOODIE_ENV_fs_DOT_oss_DOT_impl: org.apache.hadoop.fs.aliyun.oss.AliyunOSSFileSystem
+    volumes:
+      - ${PWD}/data:/data
   jobmanager:
-    image: flink:1.13.1-scala_2.12-java11
+    image: flink:1.12.2-scala_2.12-java11
     ports:
       - "8081:8081"
     command: jobmanager
@@ -72,7 +78,7 @@ services:
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
   taskmanager:
-    image: flink:1.13.1-scala_2.12-java11
+    image: flink:1.12.2-scala_2.12-java11
     depends_on:
       - jobmanager
     command: taskmanager
@@ -103,10 +109,10 @@ services:
   #   image: docker.elastic.co/kibana/kibana:7.11.2
   #   ports:
   #     - "5601:5601"
-  minio:
-    image: minio/minio
-    env_file:
-      - .env
-    ports:
-      - "9000:9000"
-    command: server /data
+  # minio:
+  #   image: minio/minio
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "9000:9000"
+  #   command: server /data
