@@ -123,11 +123,21 @@ CREATE CATALOG datasource WITH (
     'password'='postgres'
 );
 
-CREATE CATALOG my_catalog WITH (
+CREATE CATALOG iceberg WITH (
                       'type'='iceberg', 
                       'catalog-type'='hadoop',
-                      'warehouse'='/warehouse'
+                      'warehouse'='/warehouse',
+                      'property-version'='1'
                       );
+
+CREATE DATABASE iceberg_db;
+
+CREATE TABLE iceberg.iceberg_db.sample (
+    id BIGINT COMMENT 'unique id',
+    data STRING
+);
+
+INSERT INTO iceberg.iceberg_db.sample VALUES (1, 'a');
 ```
 
 ```sql

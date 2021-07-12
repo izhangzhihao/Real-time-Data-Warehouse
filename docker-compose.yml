@@ -15,7 +15,7 @@ services:
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
   postgres:
-    build: ./postgres-image
+    # build: ./postgres-image
     image: rtdw/postgres
     ports:
       - 5432:5432
@@ -51,19 +51,22 @@ services:
   sql-client:
     build: ./client-image
     image: rtdw/flink-sql-client
+    # entrypoint: /opt/sql-client/docker-entrypoint.sh
     depends_on:
       - kafka
       - jobmanager
       - elasticsearch
+      - taskmanager
     environment:
       FLINK_JOBMANAGER_HOST: jobmanager
       ZOOKEEPER_CONNECT: zookeeper
       KAFKA_BOOTSTRAP: kafka
       ES_HOST: elasticsearch
   jobmanager:
-    image: rtdw/flink-sql-client
+    image: rtdw/flink-base
     ports:
       - "8081:8081"
+    # entrypoint: /opt/flink/docker-entrypoint.sh
     command: jobmanager
     environment:
       - |
@@ -72,9 +75,10 @@ services:
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
   taskmanager:
-    image: rtdw/flink-sql-client
+    image: rtdw/flink-base
     depends_on:
       - jobmanager
+    # entrypoint: /opt/flink/docker-entrypoint.sh
     command: taskmanager
     environment:
       - |
