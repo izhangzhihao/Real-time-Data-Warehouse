@@ -15,15 +15,14 @@ services:
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
   postgres:
-    build: ./postgres-image
-    image: rtdw/postgres
+    image: postgres:12.0-alpine
     ports:
       - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - ${PWD}/postgres-image:/docker-entrypoint-initdb.d
+      - ${PWD}/postgres:/docker-entrypoint-initdb.d
   # mysql:
   #   image: mysql:5.7
   #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -67,7 +66,7 @@ services:
     volumes:
       - ${PWD}/data:/data
   jobmanager:
-    image: flink:1.12.2-scala_2.12-java11
+    image: rtdw/flink-base
     ports:
       - "8081:8081"
     command: jobmanager
@@ -77,8 +76,10 @@ services:
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
+    volumes:
+      - ${PWD}/data:/data
   taskmanager:
-    image: flink:1.12.2-scala_2.12-java11
+    image: rtdw/flink-base
     depends_on:
       - jobmanager
     command: taskmanager
@@ -88,6 +89,8 @@ services:
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
+    volumes:
+      - ${PWD}/data:/data
   # elasticsearch:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
   #   environment:

@@ -106,6 +106,43 @@ OR
 docker compose exec sql-client ./sql-client-submit.sh
 ```
 
+test
+
+```sql
+CREATE TABLE t1(
+  uuid VARCHAR(20), -- you can use 'PRIMARY KEY NOT ENFORCED' syntax to mark the field as record key
+  name VARCHAR(10),
+  age INT,
+  ts TIMESTAMP(3),
+  `partition` VARCHAR(20)
+)
+PARTITIONED BY (`partition`)
+WITH (
+  'connector' = 'hudi',
+  'path' = '/data',
+  'write.tasks' = '1', -- default is 4 ,required more resource
+  'compaction.tasks' = '1', -- default is 10 ,required more resource
+  'table.type' = 'COPY_ON_WRITE', -- this creates a MERGE_ON_READ table, by default is COPY_ON_WRITE
+  'read.tasks' = '1', -- default is 4 ,required more resource
+  'read.streaming.enabled' = 'true',  -- this option enable the streaming read
+  'read.streaming.start-commit' = '20210712134429', -- specifies the start commit instant time
+  'read.streaming.check-interval' = '4' -- specifies the check interval for finding new source commits, default 60s.
+);
+
+-- insert data using values
+INSERT INTO t1 VALUES
+  ('id1','Danny',23,TIMESTAMP '1970-01-01 00:00:01','par1'),
+  ('id2','Stephen',33,TIMESTAMP '1970-01-01 00:00:02','par1'),
+  ('id3','Julian',53,TIMESTAMP '1970-01-01 00:00:03','par2'),
+  ('id4','Fabian',31,TIMESTAMP '1970-01-01 00:00:04','par2'),
+  ('id5','Sophia',18,TIMESTAMP '1970-01-01 00:00:05','par3'),
+  ('id6','Emma',20,TIMESTAMP '1970-01-01 00:00:06','par3'),
+  ('id7','Bob',44,TIMESTAMP '1970-01-01 00:00:07','par4'),
+  ('id8','Han',56,TIMESTAMP '1970-01-01 00:00:08','par4');
+
+SELECT * FROM t1;
+```
+
 Register
 a [Postgres catalog](https://ci.apache.org/projects/flink/flink-docs-stable/dev/table/connectors/jdbc.html#postgres-database-as-a-catalog)
 , so you can access the metadata of the external tables over JDBC:
