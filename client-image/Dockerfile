@@ -20,21 +20,22 @@ FROM flink:1.11.3-scala_2.12-java11
 
 # Copy sql-client script
 COPY sql-client/ /opt/sql-client
-RUN mkdir -p /opt/sql-client/lib
 
 # Download connector libraries
-RUN wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-json/1.11.3/flink-json-1.11.3.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-kafka_2.12/1.11.3/flink-sql-connector-kafka_2.12-1.11.3.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-elasticsearch7_2.12/1.11.3/flink-sql-connector-elasticsearch7_2.12-1.11.3.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-jdbc_2.12/1.11.3/flink-connector-jdbc_2.12-1.11.3.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/postgresql/postgresql/42.2.14/postgresql-42.2.14.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.11.3/flink-connector-kafka_2.12-1.11.3.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/iceberg/iceberg-flink-runtime/0.11.1/iceberg-flink-runtime-0.11.1.jar; \
-    wget -P /opt/sql-client/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-hive-3.1.2_2.12/1.11.3/flink-sql-connector-hive-3.1.2_2.12-1.11.3.jar;
+RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-json/1.11.3/flink-json-1.11.3.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-kafka_2.12/1.11.3/flink-sql-connector-kafka_2.12-1.11.3.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-elasticsearch7_2.12/1.11.3/flink-sql-connector-elasticsearch7_2.12-1.11.3.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-jdbc_2.12/1.11.3/flink-connector-jdbc_2.12-1.11.3.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/postgresql/postgresql/42.2.14/postgresql-42.2.14.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-connector-kafka_2.12/1.11.3/flink-connector-kafka_2.12-1.11.3.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/kafka/kafka-clients/2.4.1/kafka-clients-2.4.1.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/iceberg/iceberg-flink-runtime/0.11.1/iceberg-flink-runtime-0.11.1.jar; \
+    wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-hive-3.1.2_2.12/1.11.3/flink-sql-connector-hive-3.1.2_2.12-1.11.3.jar;
 
-COPY jars/* /opt/sql-client/lib/
+RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-shaded-hadoop-2-uber/2.8.3-10.0/flink-shaded-hadoop-2-uber-2.8.3-10.0.jar; 
+
+COPY jars/* /opt/flink/lib/
 
 # Copy configuration
 COPY conf/* /opt/flink/conf/

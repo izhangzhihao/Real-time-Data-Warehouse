@@ -61,7 +61,7 @@ services:
       KAFKA_BOOTSTRAP: kafka
       ES_HOST: elasticsearch
   jobmanager:
-    image: flink:1.11.3-scala_2.12-java11
+    image: rtdw/flink-sql-client
     ports:
       - "8081:8081"
     command: jobmanager
@@ -72,7 +72,7 @@ services:
         taskmanager.numberOfTaskSlots: 50
         parallelism.default: 1
   taskmanager:
-    image: flink:1.11.3-scala_2.12-java11
+    image: rtdw/flink-sql-client
     depends_on:
       - jobmanager
     command: taskmanager
