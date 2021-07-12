@@ -15,7 +15,7 @@ services:
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
   postgres:
-    image: postgres:12.0-alpine
+    image: debezium/postgres:11
     ports:
       - 5432:5432
     environment:

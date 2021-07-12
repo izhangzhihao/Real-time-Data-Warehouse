@@ -170,6 +170,15 @@ CREATE TABLE datasource.accident_claims WITH (
                                             'properties.group.id' = 'accident_claims-consumer-group',
                                             'format' = 'debezium-json',
                                             'scan.startup.mode' = 'earliest-offset'
+                                            ) LIKE datasource.postgres.`claims.accident_claims` (EXCLUDING ALL);
+```
+
+OR generate data from datagen connector:
+
+```sql
+CREATE TABLE datasource.accident_claims WITH (
+                                            'connector' = 'datagen',
+                                            'rows-per-second' = '100'
                                             ) LIKE datasource.postgres.`claims.accident_claims` ( EXCLUDING OPTIONS);
 ```
 
@@ -184,6 +193,15 @@ CREATE TABLE datasource.members WITH (
                                     'format' = 'debezium-json',
                                     'scan.startup.mode' = 'earliest-offset'
                                     ) LIKE datasource.postgres.`claims.members` ( EXCLUDING OPTIONS);
+```
+
+OR generate data from datagen connector:
+
+```sql
+CREATE TABLE datasource.members WITH (
+                                            'connector' = 'datagen',
+                                            'rows-per-second' = '100'
+                                            ) LIKE datasource.postgres.`claims.members` ( EXCLUDING OPTIONS);
 ```
 
 Check data:
@@ -224,7 +242,9 @@ CREATE TABLE dwd.accident_claims
   'table.type' = 'MERGE_ON_READ',
   'read.streaming.enabled' = 'true',
   'read.streaming.check-interval' = '4',
-  'write.precombine.field' = 'ts_updated'
+  'write.precombine.field' = 'ts_updated',
+  'write.batch.size' = '1',
+  'write.tasks' = '1'
 );
 ```
 
@@ -244,13 +264,15 @@ CREATE TABLE dwd.members
     ds                  VARCHAR(20),
     PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwd_members',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwd_members_table',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
-      );
+      'connector'='hudi',
+      'path'='/data/dwd/dwd_members',
+      'table.type' = 'MERGE_ON_READ',
+      'read.streaming.enabled' = 'true',
+      'read.streaming.check-interval' = '4',
+      'write.precombine.field' = 'ts_updated',
+      'write.batch.size' = '1',
+      'write.tasks' = '1'
+);
 ```
 
 and submit a continuous query to the Flink cluster that will write the data from datasource into dwd table(ES):
@@ -434,13 +456,7 @@ GROUP BY m.insurance_company, ac.accident_detail;
 ```
 
 Finally, create a
-simple [dashboard in Kibana](https://www.elastic.co/guide/en/kibana/current/dashboard-create-new-dashboard.html) with a
-1s refresh rate and use the (very rustic) `postgres_datagen.sql` data generator script to periodically insert some
-records into the Postgres source table, creating visible changes in your results:
-
-```bash
-cat ./postgres_datagen.sql | docker exec -i flink-sql-cdc_postgres_1 psql -U postgres -d postgres
-```
+simple [dashboard in Kibana](https://www.elastic.co/guide/en/kibana/current/dashboard-create-new-dashboard.html) 
 
 
 
