@@ -1,5 +1,7 @@
 ## Real-time Data Warehouse
 
+Real-time Data Warehouse with: [Kafka](https://github.com/izhangzhihao/Real-time-Data-Warehouse/tree/kafka) | [Hudi](https://github.com/izhangzhihao/Real-time-Data-Warehouse/tree/hudi)
+
 <p align="center">
 <img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/125452701-2717d438-c2e5-43f9-94c9-aaa804774699.png">
 </p>
