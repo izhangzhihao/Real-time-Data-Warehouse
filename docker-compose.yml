@@ -55,6 +55,7 @@ services:
       # HOODIE_ENV_fs_DOT_oss_DOT_impl: org.apache.hadoop.fs.aliyun.oss.AliyunOSSFileSystem
     volumes:
       - ${PWD}/data:/data
+      - ${PWD}/ckp:/ckp
   jobmanager:
     image: rtdw/flink-base
     ports:
@@ -68,6 +69,7 @@ services:
         parallelism.default: 1
     volumes:
       - ${PWD}/data:/data
+      - ${PWD}/ckp:/ckp
   taskmanager:
     image: rtdw/flink-base
     depends_on:
@@ -81,6 +83,7 @@ services:
         parallelism.default: 1
     volumes:
       - ${PWD}/data:/data
+      - ${PWD}/ckp:/ckp
   # elasticsearch:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
   #   environment:

@@ -17,6 +17,8 @@
 jobmanager.rpc.address: jobmanager
 jobmanager.web.history: 20
 taskmanager.numberOfTaskSlots: 50
+taskmanager.memory.process.size: 4g
+jobmanager.memory.process.size: 4g
 state.checkpoints.num-retained: 1
 
 #high-availability: zookeeper
@@ -25,3 +27,8 @@ state.checkpoints.num-retained: 1
 #high-availability.zookeeper.path.root: /flink
 #high-availability.cluster-id: profileservice
 #high-availability.storageDir: s3://our_path
+
+execution.checkpointing.interval: 10000
+state.backend: filesystem
+state.checkpoints.dir: file:///ckp/checkpoints
+state.savepoints.dir: file:///ckp/savepoints

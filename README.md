@@ -176,10 +176,23 @@ CREATE TABLE datasource.accident_claims WITH (
 OR generate data from datagen connector:
 
 ```sql
-CREATE TABLE datasource.accident_claims WITH (
+CREATE TABLE datasource.accident_claims(
+    claim_id            BIGINT,
+    claim_total         DOUBLE,
+    claim_total_receipt VARCHAR(50),
+    claim_currency      VARCHAR(3),
+    member_id           INT,
+    accident_date       DATE,
+    accident_type       VARCHAR(20),
+    accident_detail     VARCHAR(20),
+    claim_date          DATE,
+    claim_status        VARCHAR(10),
+    ts_created          TIMESTAMP(3),
+    ts_updated          TIMESTAMP(3)
+                                          ) WITH (
                                             'connector' = 'datagen',
                                             'rows-per-second' = '100'
-                                            ) LIKE datasource.postgres.`claims.accident_claims` ( EXCLUDING OPTIONS);
+                                            );
 ```
 
 and `members` table:
@@ -198,10 +211,21 @@ CREATE TABLE datasource.members WITH (
 OR generate data from datagen connector:
 
 ```sql
-CREATE TABLE datasource.members WITH (
+CREATE TABLE datasource.members(
+    id                BIGINT,
+    first_name        VARCHAR(50),
+    last_name         VARCHAR(50),
+    address           VARCHAR(50),
+    address_city      VARCHAR(10),
+    address_country   VARCHAR(10),
+    insurance_company VARCHAR(25),
+    insurance_number  VARCHAR(50),
+    ts_created        TIMESTAMP(3),
+    ts_updated        TIMESTAMP(3)
+                                    ) WITH (
                                             'connector' = 'datagen',
                                             'rows-per-second' = '100'
-                                            ) LIKE datasource.postgres.`claims.members` ( EXCLUDING OPTIONS);
+                                            );
 ```
 
 Check data:
@@ -242,7 +266,6 @@ CREATE TABLE dwd.accident_claims
   'table.type' = 'MERGE_ON_READ',
   'read.streaming.enabled' = 'true',
   'write.batch.size' = '1',
-  'write.task.max.size' = '1',
   'write.tasks' = '1',
   'compaction.tasks' = '1',
   'compaction.delta_seconds' = '60',
@@ -275,7 +298,6 @@ CREATE TABLE dwd.members
       'table.type' = 'MERGE_ON_READ',
       'read.streaming.enabled' = 'true',
       'write.batch.size' = '1',
-      'write.task.max.size' = '1',
       'write.tasks' = '1',
       'compaction.tasks' = '1',
       'compaction.delta_seconds' = '60',
@@ -303,7 +325,8 @@ SELECT claim_id,
        claim_status,
        CAST (ts_created as TIMESTAMP),
        CAST (ts_updated as TIMESTAMP),
-       CAST (SUBSTRING(claim_date, 0, 9) as DATE)
+       claim_date
+       --CAST (SUBSTRING(claim_date, 0, 9) as DATE)
 FROM datasource.accident_claims;
 ```
 
@@ -319,7 +342,8 @@ SELECT id,
        insurance_number,
        CAST (ts_created as TIMESTAMP),
        CAST (ts_updated as TIMESTAMP),
-       CAST (SUBSTRING(ts_created, 0, 9) as DATE)
+       ts_created
+       --CAST (SUBSTRING(ts_created, 0, 9) as DATE)
 FROM datasource.members;
 ```
 
@@ -346,23 +370,30 @@ CREATE TABLE dwb.accident_claims
     claim_total_receipt VARCHAR(50),
     claim_currency      VARCHAR(3),
     member_id           INT,
-    accident_date       VARCHAR(20),
+    accident_date       DATE,
     accident_type       VARCHAR(20),
     accident_detail     VARCHAR(20),
-    claim_date          VARCHAR(20),
+    claim_date          DATE,
     claim_status        VARCHAR(10),
-    ts_created          VARCHAR(20),
-    ts_updated          VARCHAR(20),
-    ds                  VARCHAR(20),
+    ts_created          TIMESTAMP(3),
+    ts_updated          TIMESTAMP(3),
+    ds                  DATE,
     PRIMARY KEY (claim_id) NOT ENFORCED
-) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwb_accident_claims',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwb_accident_claims',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
-      );
+) PARTITIONED BY (ds) WITH (
+  'connector'='hudi',
+  'path' = '/data/dwb/accident_claims',
+  'table.type' = 'MERGE_ON_READ',
+  'read.streaming.enabled' = 'true',
+  'write.batch.size' = '1',
+  'write.tasks' = '1',
+  'compaction.tasks' = '1',
+  'compaction.delta_seconds' = '60',
+  'write.precombine.field' = 'ts_updated',
+  'read.tasks' = '1',
+  'read.streaming.check-interval' = '5',
+  'read.streaming.start-commit' = '20210712134429',
+  'index.bootstrap.enabled' = 'true'
+);
 ```
 
 ```sql
@@ -376,18 +407,25 @@ CREATE TABLE dwb.members
     address_country   VARCHAR(10),
     insurance_company VARCHAR(25),
     insurance_number  VARCHAR(50),
-    ts_created        VARCHAR(20),
-    ts_updated        VARCHAR(20),
-    ds                VARCHAR(20),
+    ts_created        TIMESTAMP(3),
+    ts_updated        TIMESTAMP(3),
+    ds                DATE,
     PRIMARY KEY (id) NOT ENFORCED
-) WITH (
-      'connector'='upsert-kafka',
-      'topic'='dwb_members',
-      'properties.bootstrap.servers'='kafka:9092',
-      'properties.group.id'='dwb_members_table',
-      'key.format' = 'csv',
-      'value.format' = 'csv'
-      );
+) PARTITIONED BY (ds) WITH (
+      'connector'='hudi',
+      'path'='/data/dwb/members',
+      'table.type' = 'MERGE_ON_READ',
+      'read.streaming.enabled' = 'true',
+      'write.batch.size' = '1',
+      'write.tasks' = '1',
+      'compaction.tasks' = '1',
+      'compaction.delta_seconds' = '60',
+      'write.precombine.field' = 'ts_updated',
+      'read.tasks' = '1',
+      'read.streaming.check-interval' = '5',
+      'read.streaming.start-commit' = '20210712134429',
+      'index.bootstrap.enabled' = 'true'
+);
 ```
 
 ```sql

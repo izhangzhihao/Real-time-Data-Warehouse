@@ -21,9 +21,6 @@ FROM rtdw/flink-base
 # Copy sql-client script
 COPY sql-client/ /opt/sql-client
 
-# Copy configuration
-COPY conf/* /opt/flink/conf/
-
 WORKDIR /opt/sql-client
 ENV SQL_CLIENT_HOME /opt/sql-client
 
