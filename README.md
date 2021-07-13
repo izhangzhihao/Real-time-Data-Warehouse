@@ -1,7 +1,7 @@
 ## Real-time Data Warehouse
 
 <p align="center">
-<img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/123548508-94b73400-d797-11eb-837a-beeb3b2a0535.png">
+<img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/125452701-2717d438-c2e5-43f9-94c9-aaa804774699.png">
 </p>
 
 #### Getting the setup up and running
