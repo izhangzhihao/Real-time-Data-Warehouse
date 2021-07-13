@@ -119,7 +119,7 @@ CREATE TABLE t1(
 PARTITIONED BY (`partition`)
 WITH (
   'connector' = 'hudi',
-  'path' = '/data',
+  'path' = '/data/t1',
   'write.tasks' = '1', -- default is 4 ,required more resource
   'compaction.tasks' = '1', -- default is 10 ,required more resource
   'table.type' = 'COPY_ON_WRITE', -- this creates a MERGE_ON_READ table, by default is COPY_ON_WRITE
@@ -227,24 +227,30 @@ CREATE TABLE dwd.accident_claims
     claim_total_receipt VARCHAR(50),
     claim_currency      VARCHAR(3),
     member_id           INT,
-    accident_date       VARCHAR(20),
+    accident_date       DATE,
     accident_type       VARCHAR(20),
     accident_detail     VARCHAR(20),
-    claim_date          VARCHAR(20),
+    claim_date          DATE,
     claim_status        VARCHAR(10),
-    ts_created          VARCHAR(20),
-    ts_updated          VARCHAR(20),
-    ds                  VARCHAR(20),
+    ts_created          TIMESTAMP(3),
+    ts_updated          TIMESTAMP(3),
+    ds                  DATE,
     PRIMARY KEY (claim_id) NOT ENFORCED
 ) PARTITIONED BY (ds) WITH (
   'connector'='hudi',
   'path' = '/data/dwd/accident_claims',
   'table.type' = 'MERGE_ON_READ',
   'read.streaming.enabled' = 'true',
-  'read.streaming.check-interval' = '4',
-  'write.precombine.field' = 'ts_updated',
   'write.batch.size' = '1',
-  'write.tasks' = '1'
+  'write.task.max.size' = '1',
+  'write.tasks' = '1',
+  'compaction.tasks' = '1',
+  'compaction.delta_seconds' = '60',
+  'write.precombine.field' = 'ts_updated',
+  'read.tasks' = '1',
+  'read.streaming.check-interval' = '5',
+  'read.streaming.start-commit' = '20210712134429',
+  'index.bootstrap.enabled' = 'true'
 );
 ```
 
@@ -259,19 +265,25 @@ CREATE TABLE dwd.members
     address_country   VARCHAR(10),
     insurance_company VARCHAR(25),
     insurance_number  VARCHAR(50),
-    ts_created        VARCHAR(20),
-    ts_updated        VARCHAR(20),
-    ds                  VARCHAR(20),
+    ts_created        TIMESTAMP(3),
+    ts_updated        TIMESTAMP(3),
+    ds                DATE,
     PRIMARY KEY (id) NOT ENFORCED
-) WITH (
+) PARTITIONED BY (ds) WITH (
       'connector'='hudi',
-      'path'='/data/dwd/dwd_members',
+      'path'='/data/dwd/members',
       'table.type' = 'MERGE_ON_READ',
       'read.streaming.enabled' = 'true',
-      'read.streaming.check-interval' = '4',
-      'write.precombine.field' = 'ts_updated',
       'write.batch.size' = '1',
-      'write.tasks' = '1'
+      'write.task.max.size' = '1',
+      'write.tasks' = '1',
+      'compaction.tasks' = '1',
+      'compaction.delta_seconds' = '60',
+      'write.precombine.field' = 'ts_updated',
+      'read.tasks' = '1',
+      'read.streaming.check-interval' = '5',
+      'read.streaming.start-commit' = '20210712134429',
+      'index.bootstrap.enabled' = 'true'
 );
 ```
 
@@ -284,14 +296,14 @@ SELECT claim_id,
        claim_total_receipt,
        claim_currency,
        member_id,
-       accident_date,
+       CAST (accident_date as DATE),
        accident_type,
        accident_detail,
-       claim_date,
+       CAST (claim_date as DATE),
        claim_status,
-       ts_created,
-       ts_updated,
-       SUBSTRING(claim_date, 0, 9)
+       CAST (ts_created as TIMESTAMP),
+       CAST (ts_updated as TIMESTAMP),
+       CAST (SUBSTRING(claim_date, 0, 9) as DATE)
 FROM datasource.accident_claims;
 ```
 
@@ -305,9 +317,9 @@ SELECT id,
        address_country,
        insurance_company,
        insurance_number,
-       ts_created,
-       ts_updated,
-       SUBSTRING(ts_created, 0, 9)
+       CAST (ts_created as TIMESTAMP),
+       CAST (ts_updated as TIMESTAMP),
+       CAST (SUBSTRING(ts_created, 0, 9) as DATE)
 FROM datasource.members;
 ```
 

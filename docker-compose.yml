@@ -23,16 +23,6 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ${PWD}/postgres:/docker-entrypoint-initdb.d
-  # mysql:
-  #   image: mysql:5.7
-  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-  #   volumes:
-  #     - ${PWD}/mysql:/docker-entrypoint-initdb.d
-  #   ports:
-  #     - 3306:3306
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=root
-  #     - MYSQL_DATABASE=wordpress
   connect:
     image: debezium/connect:1.5
     ports:
