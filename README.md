@@ -14,7 +14,7 @@
 
 `docker compose ps`
 
-You should be able to access the Flink Web UI (http://localhost:8081), as well as Kibana (http://localhost:5601).
+You should be able to access the Polynote UI (http://localhost:8192), as well as Kibana (http://localhost:5601).
 
 ## Postgres
 
@@ -91,7 +91,7 @@ to `c` (an _insert_ event), `u` (an _update_ event) and `d` (a _delete_ event).
 ## Start the Spark SQL Client:
 
 ```bash
-docker compose exec polynote spark-sql --packages io.delta:delta-core_2.12:1.0.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
+docker compose exec polynote spark-sql --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
 ```
 
 
