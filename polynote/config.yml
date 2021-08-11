@@ -3,6 +3,11 @@ dependencies:
     - io.delta:delta-core_2.12:1.0.0
     - org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2
 
+behavior:
+  dependency_isolation: false
+  shared_packages:
+    - io.delta
+
 spark:
   properties:
     spark.driver.memory: 4g
