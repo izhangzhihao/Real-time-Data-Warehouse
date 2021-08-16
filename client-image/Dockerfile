@@ -24,6 +24,6 @@ COPY sql-client/ /opt/sql-client
 WORKDIR /opt/sql-client
 ENV SQL_CLIENT_HOME /opt/sql-client
 
-COPY exec.sql /opt/sql-client
+COPY staging.sql /opt/sql-client
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
