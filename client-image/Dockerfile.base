@@ -16,10 +16,10 @@
 # limitations under the License.
 ###############################################################################
 
-FROM flink:1.13.1-scala_2.12-java11
+FROM flink:1.13.2-scala_2.12-java11
 
 # Download connector libraries
-RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-elasticsearch7_2.12/1.13.1/flink-sql-connector-elasticsearch7_2.12-1.13.1.jar; \
+RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/flink/flink-sql-connector-elasticsearch7_2.12/1.13.2/flink-sql-connector-elasticsearch7_2.12-1.13.2.jar; \
     wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/postgresql/postgresql/42.2.14/postgresql-42.2.14.jar;
 
 # RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/hudi/hudi-utilities-bundle_2.12/0.8.0/hudi-utilities-bundle_2.12-0.8.0.jar; 
