@@ -4,7 +4,6 @@ DATABASE IF NOT EXISTS `raw`;
 
 create table `raw`.t_fact_online_order
 (
-    id                 varchar(128),
     order_id           varchar(128),
     user_id            varchar(128),
     user_name          varchar(128),
@@ -29,10 +28,8 @@ create table `raw`.t_fact_online_order
     created_at         TIMESTAMP(3),
     updated_at         TIMESTAMP(3),
     deleted_at         TIMESTAMP(3),
-    start_time         TIMESTAMP(3),
-    end_time           TIMESTAMP(3),
-    is_valid           int,
-    PRIMARY KEY (id) NOT ENFORCED
+    PRIMARY KEY (order_id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) PARTITIONED BY (business_date) WITH (
     'connector'='hudi',
     'path' = '/data/raw/t_fact_online_order',
@@ -45,12 +42,13 @@ create table `raw`.t_fact_online_order
     'write.precombine.field' = 'updated_at',
     'read.tasks' = '1',
     'read.streaming.check-interval' = '60',
-    'read.streaming.start-commit' = '20210816000000',
+    'read.streaming.start-commit' = '20210816000000'
 );
 
 
 create table `raw`.t_fact_online_order_detail
 (
+    id                    varchar(128),
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
@@ -62,9 +60,8 @@ create table `raw`.t_fact_online_order_detail
     created_at            TIMESTAMP(3),
     updated_at            TIMESTAMP(3),
     deleted_at            TIMESTAMP(3),
-    start_time            TIMESTAMP(3),
-    end_time              TIMESTAMP(3),
-    is_valid              int,
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_online_order_detail',
@@ -77,7 +74,7 @@ create table `raw`.t_fact_online_order_detail
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -96,9 +93,6 @@ create table `raw`.t_dim_store
     created_at      TIMESTAMP(3),
     updated_at      TIMESTAMP(3),
     deleted_at      TIMESTAMP(3),
-    start_time      TIMESTAMP(3),
-    end_time        TIMESTAMP(3),
-    is_valid        int,
     PRIMARY KEY (store_id) NOT ENFORCED
 ) WITH (
       'connector' = 'hudi',
@@ -112,7 +106,7 @@ create table `raw`.t_dim_store
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -137,9 +131,6 @@ create table `raw`.t_fact_offline_order
     created_at         TIMESTAMP(3),
     updated_at         TIMESTAMP(3),
     deleted_at         TIMESTAMP(3),
-    start_time         TIMESTAMP(3),
-    end_time           TIMESTAMP(3),
-    is_valid           int,
     PRIMARY KEY (store_order_id) NOT ENFORCED
 ) PARTITIONED BY (business_date) WITH (
     'connector'='hudi',
@@ -160,6 +151,7 @@ create table `raw`.t_fact_offline_order
 
 create table `raw`.t_fact_offline_order_detail
 (
+    id                    varchar(128),
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
@@ -170,9 +162,8 @@ create table `raw`.t_fact_offline_order_detail
     created_at            TIMESTAMP(3),
     updated_at            TIMESTAMP(3),
     deleted_at            TIMESTAMP(3),
-    start_time            TIMESTAMP(3),
-    end_time              TIMESTAMP(3),
-    is_valid              int
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_offline_order_detail',
@@ -185,7 +176,7 @@ create table `raw`.t_fact_offline_order_detail
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -208,9 +199,8 @@ create table `raw`.t_fact_delivery
     created_at              TIMESTAMP(3),
     updated_at              TIMESTAMP(3),
     deleted_at              TIMESTAMP(3),
-    start_time              TIMESTAMP(3),
-    end_time                TIMESTAMP(3),
-    is_valid                int
+    PRIMARY KEY (delivery_no) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_delivery',
@@ -223,7 +213,7 @@ create table `raw`.t_fact_delivery
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -243,9 +233,8 @@ create table `raw`.t_fact_return
     created_at              TIMESTAMP(3),
     updated_at              TIMESTAMP(3),
     deleted_at              TIMESTAMP(3),
-    start_time              TIMESTAMP(3),
-    end_time                TIMESTAMP(3),
-    is_valid                int
+    PRIMARY KEY (return_id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_return',
@@ -258,13 +247,14 @@ create table `raw`.t_fact_return
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
 
 create table `raw`.t_fact_return_detail
 (
+    id                   varchar(128),
     order_id             varchar(128),
     return_id            varchar(128),
     product_code         varchar(128),
@@ -274,9 +264,8 @@ create table `raw`.t_fact_return_detail
     created_at           TIMESTAMP(3),
     updated_at           TIMESTAMP(3),
     deleted_at           TIMESTAMP(3),
-    start_time           TIMESTAMP(3),
-    end_time             TIMESTAMP(3),
-    is_valid             int
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_return_detail',
@@ -289,7 +278,7 @@ create table `raw`.t_fact_return_detail
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -311,9 +300,8 @@ create table `raw`.t_dim_user
     created_at       TIMESTAMP(3),
     updated_at       TIMESTAMP(3),
     deleted_at       TIMESTAMP(3),
-    start_time       TIMESTAMP(3),
-    end_time         TIMESTAMP(3),
-    is_valid         int
+    PRIMARY KEY (user_id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_user',
@@ -326,7 +314,7 @@ create table `raw`.t_dim_user
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -344,9 +332,8 @@ create table `raw`.t_dim_product
     created_at         TIMESTAMP(3),
     updated_at         TIMESTAMP(3),
     deleted_at         TIMESTAMP(3),
-    start_time         TIMESTAMP(3),
-    end_time           TIMESTAMP(3),
-    is_valid           int
+    PRIMARY KEY (product_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_product',
@@ -359,7 +346,7 @@ create table `raw`.t_dim_product
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -378,9 +365,8 @@ create table `raw`.t_dim_product_sku
     created_at            TIMESTAMP(3),
     updated_at            TIMESTAMP(3),
     deleted_at            TIMESTAMP(3),
-    start_time            TIMESTAMP(3),
-    end_time              TIMESTAMP(3),
-    is_valid              int
+    PRIMARY KEY (product_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_product_sku',
@@ -393,7 +379,7 @@ create table `raw`.t_dim_product_sku
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -408,9 +394,8 @@ create table `raw`.t_dim_product_package
     created_at           TIMESTAMP(3),
     updated_at           TIMESTAMP(3),
     deleted_at           TIMESTAMP(3),
-    start_time           TIMESTAMP(3),
-    end_time             TIMESTAMP(3),
-    is_valid             int
+    PRIMARY KEY (product_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_product_package',
@@ -423,13 +408,14 @@ create table `raw`.t_dim_product_package
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
 
 create table `raw`.t_dim_package_sku
 (
+    id                   varchar(128),
     product_package_code varchar(128),
     product_package_name varchar(128),
     product_sku_code     varchar(128),
@@ -438,9 +424,8 @@ create table `raw`.t_dim_package_sku
     created_at           TIMESTAMP(3),
     updated_at           TIMESTAMP(3),
     deleted_at           TIMESTAMP(3),
-    start_time           TIMESTAMP(3),
-    end_time             TIMESTAMP(3),
-    is_valid             int
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_package_sku',
@@ -453,22 +438,22 @@ create table `raw`.t_dim_package_sku
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
 
 create table `raw`.t_dim_product_price
 (
+    id              varchar(128),
     product_code    varchar(128),
     product_price   decimal,
     product_channel varchar(128),
     created_at      TIMESTAMP(3),
     updated_at      TIMESTAMP(3),
     deleted_at      TIMESTAMP(3),
-    start_time      TIMESTAMP(3),
-    end_time        TIMESTAMP(3),
-    is_valid        int
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_product_price',
@@ -481,7 +466,7 @@ create table `raw`.t_dim_product_price
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -495,9 +480,8 @@ create table `raw`.t_dim_campaign
     created_at          TIMESTAMP(3),
     updated_at          TIMESTAMP(3),
     deleted_at          TIMESTAMP(3),
-    start_time          TIMESTAMP(3),
-    end_time            TIMESTAMP(3),
-    is_valid            int
+    PRIMARY KEY (campaign_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_campaign',
@@ -510,7 +494,7 @@ create table `raw`.t_dim_campaign
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -525,9 +509,8 @@ create table `raw`.t_dim_promotion
     created_at           TIMESTAMP(3),
     updated_at           TIMESTAMP(3),
     deleted_at           TIMESTAMP(3),
-    start_time           TIMESTAMP(3),
-    end_time             TIMESTAMP(3),
-    is_valid             int
+    PRIMARY KEY (promotion_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_promotion',
@@ -540,12 +523,13 @@ create table `raw`.t_dim_promotion
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
 create table `raw`.t_dim_promotion_sku
 (
+    id               varchar(128),
     promotion_code   varchar(128),
     promotion_name   varchar(128),
     product_sku_code varchar(128),
@@ -554,9 +538,8 @@ create table `raw`.t_dim_promotion_sku
     created_at       TIMESTAMP(3),
     updated_at       TIMESTAMP(3),
     deleted_at       TIMESTAMP(3),
-    start_time       TIMESTAMP(3),
-    end_time         TIMESTAMP(3),
-    is_valid         int
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_promotion_sku',
@@ -569,13 +552,14 @@ create table `raw`.t_dim_promotion_sku
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
 
 create table `raw`.t_fact_user_promotion_record
 (
+    id             varchar(128),
     user_id        varchar(128),
     promotion_id   varchar(128),
     promotion_code varchar(128),
@@ -583,9 +567,8 @@ create table `raw`.t_fact_user_promotion_record
     created_at     TIMESTAMP(3),
     updated_at     TIMESTAMP(3),
     deleted_at     TIMESTAMP(3),
-    start_time     TIMESTAMP(3),
-    end_time       TIMESTAMP(3),
-    is_valid       int
+    PRIMARY KEY (id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_user_promotion_record',
@@ -598,7 +581,7 @@ create table `raw`.t_fact_user_promotion_record
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -622,9 +605,8 @@ create table `raw`.t_dim_coupon
     created_at                   TIMESTAMP(3),
     updated_at                   TIMESTAMP(3),
     deleted_at                   TIMESTAMP(3),
-    start_time                   TIMESTAMP(3),
-    end_time                     TIMESTAMP(3),
-    is_valid                     int
+    PRIMARY KEY (coupon_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_coupon',
@@ -637,7 +619,7 @@ create table `raw`.t_dim_coupon
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -653,9 +635,8 @@ create table `raw`.t_fact_coupon_receive
     created_at          TIMESTAMP(3),
     updated_at          TIMESTAMP(3),
     deleted_at          TIMESTAMP(3),
-    start_time          TIMESTAMP(3),
-    end_time            TIMESTAMP(3),
-    is_valid            int
+    PRIMARY KEY (coupon_require_id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_coupon_receive',
@@ -668,7 +649,7 @@ create table `raw`.t_fact_coupon_receive
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 
@@ -683,9 +664,8 @@ create table `raw`.t_fact_coupon_write_off
     created_at         TIMESTAMP(3),
     updated_at         TIMESTAMP(3),
     deleted_at         TIMESTAMP(3),
-    start_time         TIMESTAMP(3),
-    end_time           TIMESTAMP(3),
-    is_valid           int
+    PRIMARY KEY (coupon_require_id) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_fact_coupon_write_off',
@@ -698,7 +678,7 @@ create table `raw`.t_fact_coupon_write_off
       'write.precombine.field' = 'updated_at',
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
-      'read.streaming.start-commit' = '20210816000000',
+      'read.streaming.start-commit' = '20210816000000'
       );
 
 

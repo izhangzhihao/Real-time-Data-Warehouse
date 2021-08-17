@@ -36,7 +36,7 @@ create table staging.t_fact_online_order
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'online_order',
       'debezium.slot.name' = 'online_order'
       );
@@ -44,6 +44,7 @@ create table staging.t_fact_online_order
 
 create table staging.t_fact_online_order_detail
 (
+    id                    varchar(128),
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
@@ -54,7 +55,8 @@ create table staging.t_fact_online_order_detail
     product_actual_amount decimal,
     created_at            timestamp,
     updated_at            timestamp,
-    deleted_at            timestamp
+    deleted_at            timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -62,7 +64,7 @@ create table staging.t_fact_online_order_detail
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'online_order_detail',
       'debezium.slot.name' = 'online_order_detail'
       );
@@ -91,7 +93,7 @@ create table staging.t_dim_store
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'store',
       'debezium.slot.name' = 'store'
       );
@@ -126,7 +128,7 @@ create table staging.t_fact_offline_order
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'offline_order',
       'debezium.slot.name' = 'offline_order'
       );
@@ -135,6 +137,7 @@ create table staging.t_fact_offline_order
 
 create table staging.t_fact_offline_order_detail
 (
+    id                    varchar(128),
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
@@ -144,7 +147,8 @@ create table staging.t_fact_offline_order_detail
     product_actual_amount decimal,
     created_at            timestamp,
     updated_at            timestamp,
-    deleted_at            timestamp
+    deleted_at            timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -152,7 +156,7 @@ create table staging.t_fact_offline_order_detail
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'offline_order_detail',
       'debezium.slot.name' = 'offline_order_detail'
       );
@@ -176,7 +180,8 @@ create table staging.t_fact_delivery
     receiver_detail_address varchar(128),
     created_at              timestamp,
     updated_at              timestamp,
-    deleted_at              timestamp
+    deleted_at              timestamp,
+    PRIMARY KEY (delivery_no) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -184,7 +189,7 @@ create table staging.t_fact_delivery
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'delivery',
       'debezium.slot.name' = 'delivery'
       );
@@ -205,7 +210,8 @@ create table staging.t_fact_return
     return_delivery_code    varchar(128),
     created_at              timestamp,
     updated_at              timestamp,
-    deleted_at              timestamp
+    deleted_at              timestamp,
+    PRIMARY KEY (return_id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -213,7 +219,7 @@ create table staging.t_fact_return
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'return',
       'debezium.slot.name' = 'return'
       );
@@ -222,6 +228,7 @@ create table staging.t_fact_return
 
 create table staging.t_fact_return_detail
 (
+    id                   varchar(128),
     order_id             varchar(128),
     return_id            varchar(128),
     product_code         varchar(128),
@@ -230,7 +237,8 @@ create table staging.t_fact_return_detail
     product_return_price varchar(128),
     created_at           timestamp,
     updated_at           timestamp,
-    deleted_at           timestamp
+    deleted_at           timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -238,7 +246,7 @@ create table staging.t_fact_return_detail
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'return_detail',
       'debezium.slot.name' = 'return_detail'
       );
@@ -261,7 +269,8 @@ create table staging.t_dim_user
     birthday         date,
     created_at       timestamp,
     updated_at       timestamp,
-    deleted_at       timestamp
+    deleted_at       timestamp,
+    PRIMARY KEY (user_id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -269,7 +278,7 @@ create table staging.t_dim_user
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = '"user"',
       'debezium.slot.name' = 'user'
       );
@@ -288,7 +297,8 @@ create table staging.t_dim_product
     product_channel    varchar(128),
     created_at         timestamp,
     updated_at         timestamp,
-    deleted_at         timestamp
+    deleted_at         timestamp,
+    PRIMARY KEY (product_code) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -296,7 +306,7 @@ create table staging.t_dim_product
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'product',
       'debezium.slot.name' = 'product'
       );
@@ -316,7 +326,8 @@ create table staging.t_dim_product_sku
     product_sp_short_name varchar(128),
     created_at            timestamp,
     updated_at            timestamp,
-    deleted_at            timestamp
+    deleted_at            timestamp,
+    PRIMARY KEY (product_code) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -324,7 +335,7 @@ create table staging.t_dim_product_sku
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'product_sku',
       'debezium.slot.name' = 'product_sku'
       );
@@ -340,7 +351,8 @@ create table staging.t_dim_product_package
     product_color        varchar(128),
     created_at           timestamp,
     updated_at           timestamp,
-    deleted_at           timestamp
+    deleted_at           timestamp,
+    PRIMARY KEY (product_code) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -348,7 +360,7 @@ create table staging.t_dim_product_package
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'product_package',
       'debezium.slot.name' = 'product_package'
       );
@@ -357,6 +369,7 @@ create table staging.t_dim_product_package
 
 create table staging.t_dim_package_sku
 (
+    id                   varchar(128),
     product_package_code varchar(128),
     product_package_name varchar(128),
     product_sku_code     varchar(128),
@@ -364,7 +377,8 @@ create table staging.t_dim_package_sku
     product_sku_quantity varchar(128),
     created_at           timestamp,
     updated_at           timestamp,
-    deleted_at           timestamp
+    deleted_at           timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -372,7 +386,7 @@ create table staging.t_dim_package_sku
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'package_sku',
       'debezium.slot.name' = 'package_sku'
       );
@@ -381,12 +395,14 @@ create table staging.t_dim_package_sku
 
 create table staging.t_dim_product_price
 (
+    id              varchar(128),
     product_code    varchar(128),
     product_price   decimal,
     product_channel varchar(128),
     created_at      timestamp,
     updated_at      timestamp,
-    deleted_at      timestamp
+    deleted_at      timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -394,7 +410,7 @@ create table staging.t_dim_product_price
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'product_price',
       'debezium.slot.name' = 'product_price'
       );
@@ -409,7 +425,8 @@ create table staging.t_dim_campaign
     campaign_end_time   timestamp NOT NULL,
     created_at          timestamp,
     updated_at          timestamp,
-    deleted_at          timestamp
+    deleted_at          timestamp,
+    PRIMARY KEY (campaign_code) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -417,7 +434,7 @@ create table staging.t_dim_campaign
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'campaign',
       'debezium.slot.name' = 'campaign'
       );
@@ -433,7 +450,8 @@ create table staging.t_dim_promotion
     promotion_end_time   timestamp NOT NULL,
     created_at           timestamp,
     updated_at           timestamp,
-    deleted_at           timestamp
+    deleted_at           timestamp,
+    PRIMARY KEY (promotion_code) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -441,7 +459,7 @@ create table staging.t_dim_promotion
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'promotion',
       'debezium.slot.name' = 'promotion'
       );
@@ -449,6 +467,7 @@ create table staging.t_dim_promotion
 
 create table staging.t_dim_promotion_sku
 (
+    id               varchar(128),
     promotion_code   varchar(128),
     promotion_name   varchar(128),
     product_sku_code varchar(128),
@@ -456,7 +475,8 @@ create table staging.t_dim_promotion_sku
     is_active        varchar(128),
     created_at       timestamp,
     updated_at       timestamp,
-    deleted_at       timestamp
+    deleted_at       timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -464,7 +484,7 @@ create table staging.t_dim_promotion_sku
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'promotion_sku',
       'debezium.slot.name' = 'promotion_sku'
       );
@@ -473,13 +493,15 @@ create table staging.t_dim_promotion_sku
 
 create table staging.t_fact_user_promotion_record
 (
+    id             varchar(128),
     user_id        varchar(128),
     promotion_id   varchar(128),
     promotion_code varchar(128),
     order_id       varchar(128),
     created_at     timestamp,
     updated_at     timestamp,
-    deleted_at     timestamp
+    deleted_at     timestamp,
+    PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -487,7 +509,7 @@ create table staging.t_fact_user_promotion_record
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'user_promotion_record',
       'debezium.slot.name' = 'user_promotion_record'
       );
@@ -512,7 +534,8 @@ create table staging.t_dim_coupon
     coupon_create_time           timestamp NOT NULL,
     created_at                   timestamp,
     updated_at                   timestamp,
-    deleted_at                   timestamp
+    deleted_at                   timestamp,
+    PRIMARY KEY (coupon_code) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -520,7 +543,7 @@ create table staging.t_dim_coupon
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'coupon',
       'debezium.slot.name' = 'coupon'
       );
@@ -537,7 +560,8 @@ create table staging.t_fact_coupon_receive
     coupon_use_status   varchar(128),
     created_at          timestamp,
     updated_at          timestamp,
-    deleted_at          timestamp
+    deleted_at          timestamp,
+    PRIMARY KEY (coupon_require_id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -545,7 +569,7 @@ create table staging.t_fact_coupon_receive
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'coupon_receive',
       'debezium.slot.name' = 'coupon_receive'
       );
@@ -561,7 +585,8 @@ create table staging.t_fact_coupon_write_off
     coupon_use_status  varchar(128),
     created_at         timestamp,
     updated_at         timestamp,
-    deleted_at         timestamp
+    deleted_at         timestamp,
+    PRIMARY KEY (coupon_require_id) NOT ENFORCED
 ) WITH (
       'connector' = 'postgres-cdc',
       'hostname' = 'postgres',
@@ -569,7 +594,7 @@ create table staging.t_fact_coupon_write_off
       'username' = 'postgres',
       'password' = 'postgres',
       'database-name' = 'postgres',
-      'schema-name' = 'shop',
+      'schema-name' = 'public',
       'table-name' = 'coupon_write_off',
       'debezium.slot.name' = 'coupon_write_off'
       );

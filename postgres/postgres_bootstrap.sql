@@ -1,11 +1,11 @@
-CREATE SCHEMA shop;
-SET search_path TO shop;
+-- This extension provides a function to generate a version 4 UUID, we must enable the extension first.
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 create table online_order
 (
-    order_id           varchar(128) NOT NULL,
-    user_id            varchar(128) NOT NULL,
-    user_name          varchar(128) NOT NULL,
+    order_id           UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    user_id            varchar(128)     NOT NULL,
+    user_name          varchar(128)     NOT NULL,
     order_total_amount decimal,
     actual_amount      decimal,
     post_amount        decimal,
@@ -22,12 +22,11 @@ create table online_order
     comment_time       timestamp,
     delivery_company   varchar(128),
     delivery_code      varchar(128),
-    business_date      date      DEFAULT CURRENT_DATE,
+    business_date      date                      DEFAULT CURRENT_DATE,
     return_flag        varchar(128),
-    created_at         timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at         timestamp DEFAULT CURRENT_TIMESTAMP,
-    deleted_at         timestamp,
-    primary key (order_id)
+    created_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    deleted_at         timestamp
 );
 
 ALTER TABLE online_order
@@ -35,6 +34,7 @@ ALTER TABLE online_order
 
 create table online_order_detail
 (
+    id                    UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
@@ -43,8 +43,8 @@ create table online_order_detail
     product_pic           varchar(128),
     product_amount        decimal,
     product_actual_amount decimal,
-    created_at            timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at            timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at            timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at            timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at            timestamp
 );
 
@@ -54,7 +54,7 @@ ALTER TABLE online_order_detail
 
 create table store
 (
-    store_id        varchar(128),
+    store_id        UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     store_name      varchar(128),
     owner_id        varchar(128),
     owner_name      varchar(128),
@@ -63,10 +63,9 @@ create table store
     store_county    varchar(128),
     store_address   varchar(128),
     store_open_time varchar(128),
-    created_at      timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at      timestamp DEFAULT CURRENT_TIMESTAMP,
-    deleted_at      timestamp,
-    primary key (store_id)
+    created_at      timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at      timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    deleted_at      timestamp
 );
 
 ALTER TABLE store
@@ -75,13 +74,13 @@ ALTER TABLE store
 
 create table offline_order
 (
-    store_order_id     varchar(128),
+    store_order_id     UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id            varchar(128),
     store_id           varchar(128),
     store_name         varchar(128),
     pos_id             varchar(128),
     seq_number         bigint,
-    business_date      date      DEFAULT CURRENT_DATE,
+    business_date      date                      DEFAULT CURRENT_DATE,
     payment_time       timestamp,
     operator_id        varchar(128),
     operator_name      varchar(128),
@@ -90,10 +89,9 @@ create table offline_order
     order_pay_amount   timestamp,
     total_discount     timestamp,
     return_flag        varchar(128),
-    created_at         timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at         timestamp DEFAULT CURRENT_TIMESTAMP,
-    deleted_at         timestamp,
-    primary key (store_order_id)
+    created_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    deleted_at         timestamp
 );
 
 ALTER TABLE offline_order
@@ -102,6 +100,7 @@ ALTER TABLE offline_order
 
 create table offline_order_detail
 (
+    id                    UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
@@ -109,8 +108,8 @@ create table offline_order_detail
     product_quantity      int,
     product_amount        decimal,
     product_actual_amount decimal,
-    created_at            timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at            timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at            timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at            timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at            timestamp
 );
 
@@ -121,7 +120,7 @@ ALTER TABLE offline_order_detail
 create table delivery
 (
     order_id                varchar(128),
-    delivery_no             varchar(128),
+    delivery_no             UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_code            varchar(128),
     product_quantity        varchar(128),
     delivery_company        varchar(128),
@@ -133,8 +132,8 @@ create table delivery
     receiver_city           varchar(128),
     receiver_region         varchar(128),
     receiver_detail_address varchar(128),
-    created_at              timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at              timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at              timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at              timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at              timestamp
 );
 
@@ -144,8 +143,9 @@ ALTER TABLE delivery
 
 create table return
 (
+
     order_id                varchar(128),
-    return_id               varchar(128),
+    return_id               UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     return_application_time varchar(128),
     return_amount           varchar(128),
     return_status           varchar(128),
@@ -154,8 +154,8 @@ create table return
     return_address          varchar(128),
     return_delivery_company varchar(128),
     return_delivery_code    varchar(128),
-    created_at              timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at              timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at              timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at              timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at              timestamp
 );
 
@@ -165,14 +165,15 @@ ALTER TABLE return
 
 create table return_detail
 (
+    id                   UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     order_id             varchar(128),
     return_id            varchar(128),
     product_code         varchar(128),
     return_quantity      varchar(128),
     product_price        varchar(128),
     product_return_price varchar(128),
-    created_at           timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at           timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at           timestamp
 );
 
@@ -182,7 +183,7 @@ ALTER TABLE return_detail
 
 create table "user"
 (
-    user_id          varchar(128),
+    user_id          UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_name        varchar(128),
     user_phone       varchar(128),
     login_password   varchar(128),
@@ -194,8 +195,8 @@ create table "user"
     wechat_id        varchar(128),
     city             varchar(128),
     birthday         date,
-    created_at       timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at       timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at       timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at       timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at       timestamp
 );
 
@@ -204,7 +205,7 @@ ALTER TABLE "user"
 
 create table product
 (
-    product_code       varchar(128),
+    product_code       UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_name       varchar(128),
     product_type       varchar(128),
     product_type2      varchar(128),
@@ -213,8 +214,8 @@ create table product
     product_attribute1 varchar(128),
     product_status     varchar(128),
     product_channel    varchar(128),
-    created_at         timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at         timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at         timestamp
 );
 
@@ -224,7 +225,7 @@ ALTER TABLE product
 
 create table product_sku
 (
-    product_code          varchar(128),
+    product_code          UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_sku_code      varchar(128),
     product_sku_name      varchar(128),
     product_type          varchar(128),
@@ -233,8 +234,8 @@ create table product_sku
     product_sp_code       varchar(128),
     product_sp_name       varchar(128),
     product_sp_short_name varchar(128),
-    created_at            timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at            timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at            timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at            timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at            timestamp
 );
 
@@ -244,13 +245,13 @@ ALTER TABLE product_sku
 
 create table product_package
 (
-    product_code         varchar(128),
+    product_code         UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_type         varchar(128),
     product_package_code varchar(128),
     product_package_name varchar(128),
     product_color        varchar(128),
-    created_at           timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at           timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at           timestamp
 );
 
@@ -260,13 +261,14 @@ ALTER TABLE product_package
 
 create table package_sku
 (
+    id                   UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_package_code varchar(128),
     product_package_name varchar(128),
     product_sku_code     varchar(128),
     product_sku_name     varchar(128),
     product_sku_quantity varchar(128),
-    created_at           timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at           timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at           timestamp
 );
 
@@ -276,11 +278,12 @@ ALTER TABLE package_sku
 
 create table product_price
 (
+    id              UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_code    varchar(128),
     product_price   decimal,
     product_channel varchar(128),
-    created_at      timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at      timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at      timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at      timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at      timestamp
 );
 
@@ -290,12 +293,12 @@ ALTER TABLE product_price
 
 create table campaign
 (
-    campaign_code       varchar(128),
+    campaign_code       UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     campaign_name       varchar(128),
-    campaign_start_time timestamp NOT NULL,
-    campaign_end_time   timestamp NOT NULL,
-    created_at          timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at          timestamp DEFAULT CURRENT_TIMESTAMP,
+    campaign_start_time timestamp        NOT NULL,
+    campaign_end_time   timestamp        NOT NULL,
+    created_at          timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at          timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at          timestamp
 );
 
@@ -304,14 +307,14 @@ ALTER TABLE campaign
 
 create table promotion
 (
-    promotion_code       varchar(128),
+    promotion_code       UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     promotion_name       varchar(128),
     campaign_code        varchar(128),
     campaign_name        varchar(128),
-    promotion_start_time timestamp NOT NULL,
-    promotion_end_time   timestamp NOT NULL,
-    created_at           timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at           timestamp DEFAULT CURRENT_TIMESTAMP,
+    promotion_start_time timestamp        NOT NULL,
+    promotion_end_time   timestamp        NOT NULL,
+    created_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at           timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at           timestamp
 );
 
@@ -320,13 +323,14 @@ ALTER TABLE promotion
 
 create table promotion_sku
 (
+    id               UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     promotion_code   varchar(128),
     promotion_name   varchar(128),
     product_sku_code varchar(128),
     product_sku_name varchar(128),
     is_active        varchar(128),
-    created_at       timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at       timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at       timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at       timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at       timestamp
 );
 
@@ -336,12 +340,13 @@ ALTER TABLE promotion_sku
 
 create table user_promotion_record
 (
+    id             UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id        varchar(128),
     promotion_id   varchar(128),
     promotion_code varchar(128),
     order_id       varchar(128),
-    created_at     timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at     timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at     timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at     timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at     timestamp
 );
 
@@ -351,7 +356,7 @@ ALTER TABLE user_promotion_record
 
 create table coupon
 (
-    coupon_code                  varchar(128),
+    coupon_code                  UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     coupon_name                  varchar(128),
     campaign_code                varchar(128),
     coupon_acquire_type          varchar(128),
@@ -360,13 +365,13 @@ create table coupon
     coupon_discount              varchar(128),
     coupon_number                bigint,
     coupon_limit                 bigint,
-    coupon_distribute_start_time timestamp NOT NULL,
-    coupon_distribute_end_time   timestamp NOT NULL,
-    coupon_start_time            timestamp NOT NULL,
-    coupon_end_time              timestamp NOT NULL,
-    coupon_create_time           timestamp NOT NULL,
-    created_at                   timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at                   timestamp DEFAULT CURRENT_TIMESTAMP,
+    coupon_distribute_start_time timestamp        NOT NULL,
+    coupon_distribute_end_time   timestamp        NOT NULL,
+    coupon_start_time            timestamp        NOT NULL,
+    coupon_end_time              timestamp        NOT NULL,
+    coupon_create_time           timestamp        NOT NULL,
+    created_at                   timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at                   timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at                   timestamp
 );
 
@@ -376,14 +381,14 @@ ALTER TABLE coupon
 
 create table coupon_receive
 (
-    coupon_require_id   varchar(128),
+    coupon_require_id   UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id             varchar(128),
     coupon_code         varchar(128),
     coupon_acquire_time varchar(128),
     coupon_acquire_type varchar(128),
     coupon_use_status   varchar(128),
-    created_at          timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at          timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at          timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at          timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at          timestamp
 );
 
@@ -392,14 +397,14 @@ ALTER TABLE coupon_receive
 
 create table coupon_write_off
 (
-    coupon_require_id  varchar(128),
+    coupon_require_id  UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     order_id           varchar(128),
     coupon_code        varchar(128),
     coupon_redeem_time varchar(128),
     coupon_redeem_type varchar(128),
     coupon_use_status  varchar(128),
-    created_at         timestamp DEFAULT CURRENT_TIMESTAMP,
-    updated_at         timestamp DEFAULT CURRENT_TIMESTAMP,
+    created_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at         timestamp                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at         timestamp
 );
 
