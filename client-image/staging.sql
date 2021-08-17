@@ -37,7 +37,8 @@ create table staging.t_fact_online_order
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'online_order'
+      'table-name' = 'online_order',
+      'debezium.slot.name' = 'online_order'
       );
 
 
@@ -62,7 +63,8 @@ create table staging.t_fact_online_order_detail
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'online_order_detail'
+      'table-name' = 'online_order_detail',
+      'debezium.slot.name' = 'online_order_detail'
       );
 
 
@@ -90,7 +92,8 @@ create table staging.t_dim_store
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'store'
+      'table-name' = 'store',
+      'debezium.slot.name' = 'store'
       );
 
 
@@ -124,7 +127,8 @@ create table staging.t_fact_offline_order
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'offline_order'
+      'table-name' = 'offline_order',
+      'debezium.slot.name' = 'offline_order'
       );
 
 
@@ -149,7 +153,8 @@ create table staging.t_fact_offline_order_detail
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'offline_order_detail'
+      'table-name' = 'offline_order_detail',
+      'debezium.slot.name' = 'offline_order_detail'
       );
 
 
@@ -180,7 +185,8 @@ create table staging.t_fact_delivery
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'delivery'
+      'table-name' = 'delivery',
+      'debezium.slot.name' = 'delivery'
       );
 
 
@@ -208,7 +214,8 @@ create table staging.t_fact_return
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'return'
+      'table-name' = 'return',
+      'debezium.slot.name' = 'return'
       );
 
 
@@ -232,7 +239,8 @@ create table staging.t_fact_return_detail
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'return_detail'
+      'table-name' = 'return_detail',
+      'debezium.slot.name' = 'return_detail'
       );
 
 
@@ -262,7 +270,8 @@ create table staging.t_dim_user
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = '"user"'
+      'table-name' = '"user"',
+      'debezium.slot.name' = 'user'
       );
 
 
@@ -288,7 +297,8 @@ create table staging.t_dim_product
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'product'
+      'table-name' = 'product',
+      'debezium.slot.name' = 'product'
       );
 
 
@@ -315,7 +325,8 @@ create table staging.t_dim_product_sku
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'product_sku'
+      'table-name' = 'product_sku',
+      'debezium.slot.name' = 'product_sku'
       );
 
 
@@ -338,7 +349,8 @@ create table staging.t_dim_product_package
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'product_package'
+      'table-name' = 'product_package',
+      'debezium.slot.name' = 'product_package'
       );
 
 
@@ -361,7 +373,8 @@ create table staging.t_dim_package_sku
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'package_sku'
+      'table-name' = 'package_sku',
+      'debezium.slot.name' = 'package_sku'
       );
 
 
@@ -382,7 +395,8 @@ create table staging.t_dim_product_price
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'product_price'
+      'table-name' = 'product_price',
+      'debezium.slot.name' = 'product_price'
       );
 
 
@@ -404,7 +418,8 @@ create table staging.t_dim_campaign
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'campaign'
+      'table-name' = 'campaign',
+      'debezium.slot.name' = 'campaign'
       );
 
 
@@ -427,7 +442,8 @@ create table staging.t_dim_promotion
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'promotion'
+      'table-name' = 'promotion',
+      'debezium.slot.name' = 'promotion'
       );
 
 
@@ -449,7 +465,8 @@ create table staging.t_dim_promotion_sku
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'promotion_sku'
+      'table-name' = 'promotion_sku',
+      'debezium.slot.name' = 'promotion_sku'
       );
 
 
@@ -471,7 +488,8 @@ create table staging.t_fact_user_promotion_record
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'user_promotion_record'
+      'table-name' = 'user_promotion_record',
+      'debezium.slot.name' = 'user_promotion_record'
       );
 
 
@@ -503,7 +521,8 @@ create table staging.t_dim_coupon
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'coupon'
+      'table-name' = 'coupon',
+      'debezium.slot.name' = 'coupon'
       );
 
 
@@ -527,7 +546,8 @@ create table staging.t_fact_coupon_receive
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'coupon_receive'
+      'table-name' = 'coupon_receive',
+      'debezium.slot.name' = 'coupon_receive'
       );
 
 
@@ -550,7 +570,8 @@ create table staging.t_fact_coupon_write_off
       'password' = 'postgres',
       'database-name' = 'postgres',
       'schema-name' = 'shop',
-      'table-name' = 'coupon_write_off'
+      'table-name' = 'coupon_write_off',
+      'debezium.slot.name' = 'coupon_write_off'
       );
 
 
