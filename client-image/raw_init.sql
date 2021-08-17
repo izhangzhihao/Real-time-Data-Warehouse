@@ -27,7 +27,7 @@ SELECT UUID()            as id,
        CAST(created_at AS TIMESTAMP),
        CAST(updated_at AS TIMESTAMP),
        CAST(deleted_at AS TIMESTAMP),
-       CURRENT_TIMESTAMP AS start_time,
+       CAST(updated_at AS TIMESTAMP) AS start_time,
        CAST('9999-12-31 00:00:00' AS TIMESTAMP),
        1                 AS is_valid
 FROM staging.t_fact_online_order;

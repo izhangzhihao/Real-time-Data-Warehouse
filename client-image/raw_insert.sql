@@ -1,3 +1,6 @@
+-- SET 'sql-client.execution.result-mode' = 'changelog';
+-- select id,order_id,delivery_code,start_time,end_time,is_valid from `raw`.t_fact_online_order;
+
 INSERT
 OVERWRITE `raw`.t_fact_online_order
 SELECT *
@@ -27,15 +30,15 @@ FROM (
                 R.created_at,
                 R.updated_at,
                 R.deleted_at,
-                R.start_time,
-                CURRENT_TIMESTAMP AS end_time,
-                0                 AS is_valid
+                if(S.updated_at IS NULL, TO_TIMESTAMP('1000-01-01 00:00:00'), R.updated_at) AS start_time,
+                S.updated_at                                                                AS end_time,
+                0                                                                           AS is_valid
          FROM `raw`.t_fact_online_order AS R
-                  LEFT JOIN staging.t_fact_online_order AS S
-                            ON R.order_id = S.order_id
+                  INNER JOIN staging.t_fact_online_order AS S
+                             ON R.order_id = S.order_id
          WHERE R.is_valid = 1
-         UNION
-         SELECT UUID() as id,
+         UNION ALL
+         SELECT UUID()                          as id,
                 S.order_id,
                 S.user_id,
                 S.user_name,
@@ -60,12 +63,8 @@ FROM (
                 CAST(S.created_at AS TIMESTAMP),
                 CAST(S.updated_at AS TIMESTAMP),
                 CAST(S.deleted_at AS TIMESTAMP),
-                CURRENT_TIMESTAMP AS start_time,
+                CAST(S.updated_at AS TIMESTAMP) AS start_time,
                 CAST('9999-12-31 00:00:00' AS TIMESTAMP),
-                1                 AS is_valid
-
+                1                               AS is_valid
          FROM staging.t_fact_online_order AS S
-                  LEFT JOIN `raw`.t_fact_online_order AS R
-                            ON S.order_id = R.order_id
-         WHERE R.order_id IS NULL
      ) AS UPDATE_AND_NEW;

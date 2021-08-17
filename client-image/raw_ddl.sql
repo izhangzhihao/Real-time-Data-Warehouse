@@ -4,10 +4,10 @@ DATABASE IF NOT EXISTS `raw`;
 
 create table `raw`.t_fact_online_order
 (
-    id                 varchar(128) NOT NULL,
-    order_id           varchar(128) NOT NULL,
-    user_id            varchar(128) NOT NULL,
-    user_name          varchar(128) NOT NULL,
+    id                 varchar(128),
+    order_id           varchar(128),
+    user_id            varchar(128),
+    user_name          varchar(128),
     order_total_amount decimal,
     actual_amount      decimal,
     post_amount        decimal,
@@ -32,7 +32,7 @@ create table `raw`.t_fact_online_order
     start_time         TIMESTAMP(3),
     end_time           TIMESTAMP(3),
     is_valid           int,
-    PRIMARY KEY (order_id) NOT ENFORCED
+    PRIMARY KEY (id) NOT ENFORCED
 ) PARTITIONED BY (business_date) WITH (
     'connector'='hudi',
     'path' = '/data/raw/t_fact_online_order',
@@ -46,7 +46,6 @@ create table `raw`.t_fact_online_order
     'read.tasks' = '1',
     'read.streaming.check-interval' = '60',
     'read.streaming.start-commit' = '20210816000000',
-    'index.bootstrap.enabled' = 'true'
 );
 
 
@@ -79,7 +78,6 @@ create table `raw`.t_fact_online_order_detail
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -115,7 +113,6 @@ create table `raw`.t_dim_store
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -156,8 +153,7 @@ create table `raw`.t_fact_offline_order
     'write.precombine.field' = 'updated_at',
     'read.tasks' = '1',
     'read.streaming.check-interval' = '60',
-    'read.streaming.start-commit' = '20210816000000',
-    'index.bootstrap.enabled' = 'true'
+    'read.streaming.start-commit' = '20210816000000'
 );
 
 
@@ -190,7 +186,6 @@ create table `raw`.t_fact_offline_order_detail
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -229,7 +224,6 @@ create table `raw`.t_fact_delivery
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -265,7 +259,6 @@ create table `raw`.t_fact_return
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -297,7 +290,6 @@ create table `raw`.t_fact_return_detail
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -335,7 +327,6 @@ create table `raw`.t_dim_user
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -369,7 +360,6 @@ create table `raw`.t_dim_product
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -404,7 +394,6 @@ create table `raw`.t_dim_product_sku
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -435,7 +424,6 @@ create table `raw`.t_dim_product_package
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -466,7 +454,6 @@ create table `raw`.t_dim_package_sku
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -495,7 +482,6 @@ create table `raw`.t_dim_product_price
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -525,7 +511,6 @@ create table `raw`.t_dim_campaign
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -556,7 +541,6 @@ create table `raw`.t_dim_promotion
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -586,7 +570,6 @@ create table `raw`.t_dim_promotion_sku
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -616,7 +599,6 @@ create table `raw`.t_fact_user_promotion_record
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -656,7 +638,6 @@ create table `raw`.t_dim_coupon
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -688,7 +669,6 @@ create table `raw`.t_fact_coupon_receive
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
@@ -719,7 +699,6 @@ create table `raw`.t_fact_coupon_write_off
       'read.tasks' = '1',
       'read.streaming.check-interval' = '60',
       'read.streaming.start-commit' = '20210816000000',
-      'index.bootstrap.enabled' = 'true'
       );
 
 
