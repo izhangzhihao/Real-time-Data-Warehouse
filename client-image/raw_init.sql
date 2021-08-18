@@ -2,8 +2,7 @@
 --to avoid error 'org.apache.hudi.exception.HoodieException: No successful commits under path'
 
 INSERT INTO `raw`.t_fact_online_order
-SELECT UUID()            as id,
-       order_id,
+SELECT order_id,
        user_id,
        user_name,
        CAST(order_total_amount AS DECIMAL),
@@ -26,8 +25,20 @@ SELECT UUID()            as id,
        return_flag,
        CAST(created_at AS TIMESTAMP),
        CAST(updated_at AS TIMESTAMP),
-       CAST(deleted_at AS TIMESTAMP),
-       CAST(updated_at AS TIMESTAMP) AS start_time,
-       CAST('9999-12-31 00:00:00' AS TIMESTAMP),
-       1                 AS is_valid
+       CAST(deleted_at AS TIMESTAMP)
 FROM staging.t_fact_online_order;
+
+INSERT INTO `raw`.t_fact_online_order_detail
+SELECT id,
+       order_id,
+       product_code,
+       product_name,
+       product_type,
+       CAST(product_quantity AS INT),
+       product_pic,
+       CAST(product_amount AS DECIMAL),
+       CAST(product_actual_amount AS DECIMAL),
+       CAST(created_at AS TIMESTAMP),
+       CAST(updated_at AS TIMESTAMP),
+       CAST(deleted_at AS TIMESTAMP)
+FROM staging.t_fact_online_order_detail;
