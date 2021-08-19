@@ -4,7 +4,6 @@
 INSERT INTO `raw`.t_fact_online_order
 SELECT order_id,
        user_id,
-       user_name,
        CAST(order_total_amount AS DECIMAL),
        CAST(actual_amount AS DECIMAL),
        CAST(post_amount AS DECIMAL),
@@ -32,10 +31,7 @@ INSERT INTO `raw`.t_fact_online_order_detail
 SELECT id,
        order_id,
        product_code,
-       product_name,
-       product_type,
        CAST(product_quantity AS INT),
-       product_pic,
        CAST(product_amount AS DECIMAL),
        CAST(product_actual_amount AS DECIMAL),
        CAST(created_at AS TIMESTAMP),
