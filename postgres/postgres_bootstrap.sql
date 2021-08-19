@@ -5,7 +5,6 @@ create table online_order
 (
     order_id           UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id            varchar(128)     NOT NULL,
-    user_name          varchar(128)     NOT NULL,
     order_total_amount decimal,
     actual_amount      decimal,
     post_amount        decimal,
@@ -38,7 +37,7 @@ create table online_order_detail
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
-    product_type          varchar(128),
+    product_type          bigint,
     product_quantity      int,
     product_pic           varchar(128),
     product_amount        decimal,
@@ -54,7 +53,7 @@ ALTER TABLE online_order_detail
 
 create table store
 (
-    store_id        UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    store_code      UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     store_name      varchar(128),
     owner_id        varchar(128),
     owner_name      varchar(128),
@@ -76,7 +75,7 @@ create table offline_order
 (
     store_order_id     UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id            varchar(128),
-    store_id           varchar(128),
+    store_code         varchar(128),
     store_name         varchar(128),
     pos_id             varchar(128),
     seq_number         bigint,
@@ -104,7 +103,7 @@ create table offline_order_detail
     order_id              varchar(128),
     product_code          varchar(128),
     product_name          varchar(128),
-    product_type          varchar(128),
+    product_type          bigint,
     product_quantity      int,
     product_amount        decimal,
     product_actual_amount decimal,
@@ -123,6 +122,7 @@ create table delivery
     delivery_no             UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_code            varchar(128),
     product_quantity        varchar(128),
+    delivery_time           varchar(128),
     delivery_company        varchar(128),
     delivery_code           varchar(128),
     receiver_name           varchar(128),
@@ -207,8 +207,8 @@ create table product
 (
     product_code       UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_name       varchar(128),
-    product_type       varchar(128),
-    product_type2      varchar(128),
+    product_type       bigint,
+    product_type2      bigint,
     product_pic        varchar(128),
     product_brand      varchar(128),
     product_attribute1 varchar(128),
@@ -228,7 +228,7 @@ create table product_sku
     product_code          UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     product_sku_code      varchar(128),
     product_sku_name      varchar(128),
-    product_type          varchar(128),
+    product_type          bigint,
     product_color         varchar(128),
     product_net_content   varchar(128),
     product_sp_code       varchar(128),
@@ -246,7 +246,7 @@ ALTER TABLE product_sku
 create table product_package
 (
     product_code         UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-    product_type         varchar(128),
+    product_type         bigint,
     product_package_code varchar(128),
     product_package_name varchar(128),
     product_color        varchar(128),
@@ -323,15 +323,15 @@ ALTER TABLE promotion
 
 create table promotion_sku
 (
-    id               UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-    promotion_code   varchar(128),
-    promotion_name   varchar(128),
-    product_sku_code varchar(128),
-    product_sku_name varchar(128),
-    is_active        varchar(128),
-    created_at       timestamp                 DEFAULT CURRENT_TIMESTAMP,
-    updated_at       timestamp                 DEFAULT CURRENT_TIMESTAMP,
-    deleted_at       timestamp
+    id             UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    promotion_code varchar(128),
+    promotion_name varchar(128),
+    product_code   varchar(128),
+    product_name   varchar(128),
+    is_active      varchar(128),
+    created_at     timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at     timestamp                 DEFAULT CURRENT_TIMESTAMP,
+    deleted_at     timestamp
 );
 
 ALTER TABLE promotion_sku
@@ -409,6 +409,25 @@ create table coupon_write_off
 );
 
 ALTER TABLE coupon_write_off
+    REPLICA IDENTITY FULL;
+
+
+create table region
+(
+    country_code  varchar(128) PRIMARY KEY NOT NULL,
+    country_name  varchar(128),
+    province_code varchar(128),
+    province_name varchar(128),
+    city_code     varchar(128),
+    city_name     varchar(128),
+    region_code   varchar(128),
+    region_name   varchar(128),
+    created_at    timestamp DEFAULT CURRENT_TIMESTAMP,
+    updated_at    timestamp DEFAULT CURRENT_TIMESTAMP,
+    deleted_at    timestamp
+);
+
+ALTER TABLE region
     REPLICA IDENTITY FULL;
 
 

@@ -6,7 +6,6 @@ create table `raw`.t_fact_online_order
 (
     order_id           varchar(128),
     user_id            varchar(128),
-    user_name          varchar(128),
     order_total_amount decimal,
     actual_amount      decimal,
     post_amount        decimal,
@@ -51,10 +50,7 @@ create table `raw`.t_fact_online_order_detail
     id                    varchar(128),
     order_id              varchar(128),
     product_code          varchar(128),
-    product_name          varchar(128),
-    product_type          varchar(128),
     product_quantity      int,
-    product_pic           varchar(128),
     product_amount        decimal,
     product_actual_amount decimal,
     created_at            TIMESTAMP(3),
@@ -81,7 +77,7 @@ create table `raw`.t_fact_online_order_detail
 
 create table `raw`.t_dim_store
 (
-    store_id        varchar(128),
+    store_code      varchar(128),
     store_name      varchar(128),
     owner_id        varchar(128),
     owner_name      varchar(128),
@@ -93,7 +89,7 @@ create table `raw`.t_dim_store
     created_at      TIMESTAMP(3),
     updated_at      TIMESTAMP(3),
     deleted_at      TIMESTAMP(3),
-    PRIMARY KEY (store_id) NOT ENFORCED
+    PRIMARY KEY (store_code) NOT ENFORCED
 ) WITH (
       'connector' = 'hudi',
       'path' = '/data/raw/t_dim_store',
@@ -115,8 +111,7 @@ create table `raw`.t_fact_offline_order
 (
     store_order_id     varchar(128),
     user_id            varchar(128),
-    store_id           varchar(128),
-    store_name         varchar(128),
+    store_code         varchar(128),
     pos_id             varchar(128),
     seq_number         bigint,
     business_date      date,
@@ -154,8 +149,7 @@ create table `raw`.t_fact_offline_order_detail
     id                    varchar(128),
     order_id              varchar(128),
     product_code          varchar(128),
-    product_name          varchar(128),
-    product_type          varchar(128),
+    product_type          bigint,
     product_quantity      int,
     product_amount        decimal,
     product_actual_amount decimal,
@@ -187,6 +181,7 @@ create table `raw`.t_fact_delivery
     delivery_no             varchar(128),
     product_code            varchar(128),
     product_quantity        varchar(128),
+    delivery_time           varchar(128),
     delivery_company        varchar(128),
     delivery_code           varchar(128),
     receiver_name           varchar(128),
@@ -322,8 +317,8 @@ create table `raw`.t_dim_product
 (
     product_code       varchar(128),
     product_name       varchar(128),
-    product_type       varchar(128),
-    product_type2      varchar(128),
+    product_type       bigint,
+    product_type2      bigint,
     product_pic        varchar(128),
     product_brand      varchar(128),
     product_attribute1 varchar(128),
@@ -356,7 +351,7 @@ create table `raw`.t_dim_product_sku
     product_code          varchar(128),
     product_sku_code      varchar(128),
     product_sku_name      varchar(128),
-    product_type          varchar(128),
+    product_type          bigint,
     product_color         varchar(128),
     product_net_content   varchar(128),
     product_sp_code       varchar(128),
@@ -387,7 +382,7 @@ create table `raw`.t_dim_product_sku
 create table `raw`.t_dim_product_package
 (
     product_code         varchar(128),
-    product_type         varchar(128),
+    product_type         bigint,
     product_package_code varchar(128),
     product_package_name varchar(128),
     product_color        varchar(128),
@@ -529,15 +524,15 @@ create table `raw`.t_dim_promotion
 
 create table `raw`.t_dim_promotion_sku
 (
-    id               varchar(128),
-    promotion_code   varchar(128),
-    promotion_name   varchar(128),
-    product_sku_code varchar(128),
-    product_sku_name varchar(128),
-    is_active        varchar(128),
-    created_at       TIMESTAMP(3),
-    updated_at       TIMESTAMP(3),
-    deleted_at       TIMESTAMP(3),
+    id             varchar(128),
+    promotion_code varchar(128),
+    promotion_name varchar(128),
+    product_code   varchar(128),
+    product_name   varchar(128),
+    is_active      varchar(128),
+    created_at     TIMESTAMP(3),
+    updated_at     TIMESTAMP(3),
+    deleted_at     TIMESTAMP(3),
     PRIMARY KEY (id) NOT ENFORCED,
     WATERMARK FOR updated_at AS updated_at
 ) WITH (
@@ -681,6 +676,34 @@ create table `raw`.t_fact_coupon_write_off
       'read.streaming.start-commit' = '20210816000000'
       );
 
-
+create table `raw`.t_dim_region
+(
+    country_code  varchar(128),
+    country_name  varchar(128),
+    province_code varchar(128),
+    province_name varchar(128),
+    city_code     varchar(128),
+    city_name     varchar(128),
+    region_code   varchar(128),
+    region_name   varchar(128),
+    created_at    timestamp,
+    updated_at    timestamp,
+    deleted_at    timestamp,
+    PRIMARY KEY (country_code) NOT ENFORCED,
+    WATERMARK FOR updated_at AS updated_at
+) WITH (
+      'connector' = 'hudi',
+      'path' = '/data/raw/t_dim_region',
+      'table.type' = 'MERGE_ON_READ',
+      'read.streaming.enabled' = 'true',
+      'write.batch.size' = '100',
+      'write.tasks' = '1',
+      'compaction.tasks' = '1',
+      'compaction.delta_seconds' = '60',
+      'write.precombine.field' = 'updated_at',
+      'read.tasks' = '1',
+      'read.streaming.check-interval' = '60',
+      'read.streaming.start-commit' = '20210816000000'
+      );
 
 
