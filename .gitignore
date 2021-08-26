@@ -2,3 +2,9 @@
 client-image/jars
 ckp
 data
+bak
+project/target
+target
+.bsp
+tmp.sql
+project

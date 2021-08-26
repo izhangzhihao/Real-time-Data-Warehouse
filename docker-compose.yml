@@ -9,11 +9,16 @@ services:
   kafka:
     image: debezium/kafka:1.5
     ports:
+      - 19092:19092
       - 9092:9092
     links:
       - zookeeper
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
+      - ADVERTISED_HOST_NAME=kafka
+      - LISTENERS=PLAINTEXT://kafka:9092
+      - ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      - LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
   akhq:
     image: tchiotludo/akhq
     environment:
@@ -48,56 +53,55 @@ services:
     links:
       - kafka
       - postgres
-      - mysql
     environment:
       - BOOTSTRAP_SERVERS=kafka:9092
       - GROUP_ID=test-consumer-group
       - CONFIG_STORAGE_TOPIC=my_connect_configs
       - OFFSET_STORAGE_TOPIC=my_connect_offsets
       - STATUS_STORAGE_TOPIC=my_connect_statuses
-  polynote:
-    build: ./polynote
-    image: polynote
-    command: --config /opt/config/config.yml
-    depends_on:
-      - kafka
-      - elasticsearch
-    environment:
-      FLINK_JOBMANAGER_HOST: jobmanager
-      ZOOKEEPER_CONNECT: zookeeper
-      KAFKA_BOOTSTRAP: kafka
-      ES_HOST: elasticsearch
-    ports:
-      - 8192:8192
-      - "4040-4050:4040-4050"
-    volumes:
-      - ${PWD}/polynote/config.yml:/opt/config/config.yml
-      - ${PWD}/polynote/notebooks:/opt/notebooks/
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.11.2
-    ports:
-      - "5601:5601"
-  minio:
-    image: minio/minio
-    env_file:
-      - .env
-    ports:
-      - "9000:9000"
-    command: server /data
+#  polynote:
+#    build: ./polynote
+#    image: polynote
+#    command: --config /opt/config/config.yml
+#    depends_on:
+#      - kafka
+#      - elasticsearch
+#    environment:
+#      FLINK_JOBMANAGER_HOST: jobmanager
+#      ZOOKEEPER_CONNECT: zookeeper
+#      KAFKA_BOOTSTRAP: kafka
+#      ES_HOST: elasticsearch
+#    ports:
+#      - 8192:8192
+#      - "4040-4050:4040-4050"
+#    volumes:
+#      - ${PWD}/polynote/config.yml:/opt/config/config.yml
+#      - ${PWD}/polynote/notebooks:/opt/notebooks/
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2
+#    environment:
+#      - cluster.name=docker-cluster
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#      - discovery.type=single-node
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#      nofile:
+#        soft: 65536
+#        hard: 65536
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.11.2
+#    ports:
+#      - "5601:5601"
+#  minio:
+#    image: minio/minio
+#    env_file:
+#      - .env
+#    ports:
+#      - "9000:9000"
+#    command: server /data
