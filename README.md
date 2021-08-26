@@ -1,20 +1,16 @@
 ## Real-time Data Warehouse with Apache Spark & Delta
 
 <!-- <p align="center">
-<img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/123548508-94b73400-d797-11eb-837a-beeb3b2a0535.png">
+<img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/130965499-f7cce75a-0e68-4ad3-9774-5f74b74acbae.png">
 </p> -->
 
 #### Getting the setup up and running
-
-`docker compose build`
 
 `docker compose up -d`
 
 #### Check everything really up and running
 
 `docker compose ps`
-
-You should be able to access the Polynote UI (http://localhost:8192), as well as Kibana (http://localhost:5601).
 
 ## Postgres
 
@@ -27,7 +23,9 @@ docker compose exec postgres env PGOPTIONS="--search_path=claims" bash -c 'psql 
 #### What tables are we dealing with?
 
 ```sql
-SELECT * FROM information_schema.tables WHERE table_schema = 'claims';
+SELECT *
+FROM information_schema.tables
+WHERE table_schema = 'claims';
 ```
 
 ## Debezium
@@ -88,35 +86,14 @@ WHERE claim_id = 1001;
 In the output of your Kafka console consumer, you should now see three consecutive events with `op` values equal
 to `c` (an _insert_ event), `u` (an _update_ event) and `d` (a _delete_ event).
 
-## Start the Spark SQL Client:
+## NOTE
 
-```bash
-docker compose exec polynote spark-sql --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
-```
-
-
-OR
-
-```bash
-docker compose exec polynote spark-sql -f exec.sql --packages io.delta:delta-core_2.12:1.0.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog"
-```
-
-This DDL is used to define a stream table. We can create a stream table like same way spark supports data source table creation. Besides, there is no obvious difference between static table definition and stream table definition.
-
-```sql
-CREATE TABLE accident_claims_cdc
-USING kafka
-options (
-subscribe="pg_claims.claims.accident_claims", kafka.bootstrap.servers="kafka:9092"
-);
-```
-
-
-## Execute streaming job from Polynote
-
-http://localhost:8192
+The logic is pretty much the same with the [Hudi](https://github.com/izhangzhihao/Real-time-Data-Warehouse/tree/hudi)
+version except write Scala code instead of SQL.
 
 ## References
+
+* [Query an older snapshot of a table (time travel)](https://docs.delta.io/latest/delta-batch.html#-deltatimetravel)
 
 * [Simplify CDC pipeline with Spark Streaming SQL and Delta Lake](https://www.iteblog.com/ppt/sparkaisummit-north-america-2020-iteblog/simplify-cdc-pipeline-with-spark-streaming-sql-and-delta-lake-iteblog.com.pdf)
 
