@@ -119,3 +119,12 @@ services:
   #   ports:
   #     - "9000:9000"
   #   command: server /data
+#  zeppelin:
+#    image: apache/zeppelin:0.9.0
+#    ports:
+#      - 7077:7077
+#      - 8080:8080
+#    environment:
+#      - ZEPPELIN_NOTEBOOK_DIR='/notebook'
+#    volumes:
+#      - ${PWD}/notebook:/notebook
