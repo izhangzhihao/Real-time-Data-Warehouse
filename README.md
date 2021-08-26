@@ -1,8 +1,8 @@
 ## Real-time Data Warehouse with Apache Spark & Delta
 
-<!-- <p align="center">
+<p align="center">
 <img width="700" alt="demo_overview" src="https://user-images.githubusercontent.com/12044174/130965499-f7cce75a-0e68-4ad3-9774-5f74b74acbae.png">
-</p> -->
+</p>
 
 #### Getting the setup up and running
 
