@@ -30,7 +30,6 @@ services:
     links:
       - kafka
       - postgres
-      - mysql
     environment:
       - BOOTSTRAP_SERVERS=kafka:9092
       - GROUP_ID=test-consumer-group
