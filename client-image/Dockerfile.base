@@ -41,7 +41,7 @@ RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apac
     # wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/com/fasterxml/woodstox/woodstox-core/5.0.3/woodstox-core-5.0.3.jar; 
 # RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/org/apache/hudi/hudi-flink-bundle_2.12/0.9.0/hudi-flink-bundle_2.12-0.9.0.jar;
 # RUN wget -P /opt/flink/lib/ https://maven.aliyun.com/repository/central/com/alibaba/ververica/flink-connector-postgres-cdc/1.5.0/flink-connector-postgres-cdc-1.5.0.jar;
-COPY jars/* /opt/flink/lib/
+# COPY jars/* /opt/flink/lib/
 
 # Copy configuration
 COPY conf/* /opt/flink/conf/
